@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PJ — แปลงรูปเป็นเส้น</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg: #070d1a;
+  --surface: #0d1829;
+  --surface2: #122035;
+  --border: #1e3358;
+  --accent: #2563eb;
+  --accent-light: #3b82f6;
+  --accent-glow: rgba(37,99,235,0.3);
+  --text: #e8edf8;
+  --muted: #6b82a8;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --card: #0f1e35;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Kanit', sans-serif;
+  font-weight: 300;
+}
+
+/* ── App Shell ── */
+.app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 430px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 34px;
+  height: 34px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.05em;
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.logo-text {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.logo-sub {
+  font-size: 0.6rem;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: -2px;
+}
+
+.header-action {
+  width: 36px;
+  height: 36px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* ── Screens ── */
+.screen {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.screen.active { display: flex; flex-direction: column; }
+
+/* scrollbar */
+.screen::-webkit-scrollbar { width: 3px; }
+.screen::-webkit-scrollbar-track { background: transparent; }
+.screen::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── Bottom Nav ── */
+.bottom-nav {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  flex-shrink: 0;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: 'Kanit', sans-serif;
+}
+
+.nav-item.active { color: var(--accent-light); }
+.nav-icon { font-size: 1.3rem; line-height: 1; }
+.nav-label { font-size: 0.6rem; font-weight: 400; }
+
+/* ── Upload Screen ── */
+.upload-area {
+  margin: 20px 16px;
+  border: 2px dashed var(--border);
+  border-radius: 20px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.25s;
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-area::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(37,99,235,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.upload-area:active, .upload-area.drag { border-color: var(--accent); background: rgba(37,99,235,0.06); }
+
+.upload-icon { font-size: 3rem; line-height: 1; }
+.upload-title { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+.upload-sub { font-size: 0.8rem; color: var(--muted); text-align: center; line-height: 1.6; }
+
+.btn-upload {
+  margin-top: 8px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 28px;
+  font-family: 'Kanit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.btn-upload:active { transform: scale(0.97); }
+
+/* Quick tips */
+.tips-section { padding: 0 16px 16px; }
+.tips-title { font-size: 0.75rem; color: var(--muted); font-weight: 500; margin-bottom: 10px; letter-spacing: 0.05em; }
+
+.tip-cards { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.tip-cards::-webkit-scrollbar { display: none; }
+
+.tip-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.tip-card-icon { font-size: 1.4rem; margin-bottom: 6px; }
+.tip-card-title { font-size: 0.78rem; font-weight: 500; color: var(--text); }
+.tip-card-sub { font-size: 0.68rem; color: var(--muted); margin-top: 2px; line-height: 1.5; }
+
+/* ── Processing Screen ── */
+.process-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back-btn {
+  width: 36px; height: 36px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1rem; flex-shrink: 0;
+}
+
+.process-title { font-size: 1rem; font-weight: 600; }
+.process-sub { font-size: 0.72rem; color: var(--muted); }
+
+.preview-box {
+  margin: 0 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  position: relative;
+  aspect-ratio: 4/3;
+}
+
+.preview-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.preview-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 8px;
+  color: var(--muted); font-size: 0.8rem;
+}
+
+/* AI Analyzing overlay */
+.analyzing-overlay {
+  position: absolute; inset: 0;
+  background: rgba(7,13,26,0.85);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; backdrop-filter: blur(2px);
+}
+
+.spinner {
+  width: 48px; height: 48px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.analyzing-text { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+.analyzing-sub { font-size: 0.72rem; color: var(--muted); }
+
+.progress-bar {
+  width: 160px; height: 4px;
+  background: var(--border); border-radius: 2px; overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%; background: var(--accent); border-radius: 2px;
+  animation: progress 2.5s ease forwards;
+}
+
+@keyframes progress { from { width: 0%; } to { width: 85%; } }
+
+/* Subject list */
+.subjects-section { padding: 16px; }
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.section-title { font-size: 0.85rem; font-weight: 600; }
+.section-badge {
+  background: var(--accent); color: white;
+  font-size: 0.65rem; font-weight: 600;
+  padding: 2px 8px; border-radius: 20px;
+}
+
+.subjects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.subject-card {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.subject-card.selected { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+.subject-card.excluded { opacity: 0.4; }
+
+.subject-thumb {
+  width: 100%; aspect-ratio: 1;
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+  position: relative; overflow: hidden;
+}
+
+.subject-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.subject-check {
+  position: absolute; top: 4px; right: 4px;
+  width: 20px; height: 20px;
+  background: var(--accent); border-radius: 50%;
+  display: none; align-items: center; justify-content: center;
+  font-size: 0.65rem; color: white;
+}
+
+.subject-card.selected .subject-check { display: flex; }
+
+.subject-label {
+  padding: 6px 6px 8px;
+  font-size: 0.68rem; font-weight: 500;
+  text-align: center; color: var(--text);
+}
+
+.subject-conf {
+  font-size: 0.58rem; color: var(--muted);
+  text-align: center; margin-top: 1px;
+}
+
+/* Action bar */
+.action-bar {
+  position: sticky; bottom: 0;
+  background: linear-gradient(to top, var(--bg) 60%, transparent);
+  padding: 16px;
+  display: flex; gap: 10px;
+}
+
+.btn {
+  flex: 1; padding: 14px;
+  border-radius: 14px; border: none;
+  font-family: 'Kanit', sans-serif;
+  font-size: 0.95rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 20px var(--accent-glow); }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+/* ── Export Screen ── */
+.export-preview {
+  margin: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.export-canvas {
+  width: 100%; aspect-ratio: 4/3;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+
+.export-canvas svg { width: 80%; height: 80%; }
+
+.export-toolbar {
+  display: flex; gap: 1px;
+  background: var(--border);
+}
+
+.export-tool {
+  flex: 1; padding: 10px 6px;
+  background: var(--surface2);
+  border: none; color: var(--muted);
+  font-family: 'Kanit', sans-serif; font-size: 0.72rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+
+.export-tool.active { background: var(--surface); color: var(--accent-light); }
+.export-tool-icon { font-size: 1rem; }
+
+/* Detail controls */
+.controls-section { padding: 0 16px 16px; }
+
+.control-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.control-card-title {
+  font-size: 0.8rem; font-weight: 600; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.control-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+
+.control-label { font-size: 0.75rem; color: var(--muted); }
+.control-value { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-light); }
+
+input[type="range"] {
+  -webkit-appearance: none; width: 100%;
+  height: 4px; background: var(--border); border-radius: 2px; outline: none;
+  margin-top: 4px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px;
+  border-radius: 50%; background: var(--accent); cursor: pointer;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.toggle-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px;
+}
+
+.toggle-label { font-size: 0.78rem; color: var(--text); }
+.toggle-sub { font-size: 0.65rem; color: var(--muted); margin-top: 1px; }
+
+.toggle {
+  width: 44px; height: 24px;
+  background: var(--border); border-radius: 12px;
+  cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0;
+}
+.toggle.on { background: var(--accent); }
+.toggle::after {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; background: white;
+  border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s;
+}
+.toggle.on::after { left: 23px; }
+
+/* Download buttons */
+.download-section { padding: 0 16px 100px; }
+.download-title { font-size: 0.75rem; color: var(--muted); font-weight: 500; margin-bottom: 10px; letter-spacing: 0.05em; }
+
+.dl-btn {
+  width: 100%; padding: 16px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; transition: all 0.2s;
+  font-family: 'Kanit', sans-serif; text-align: left;
+}
+
+.dl-btn:active { transform: scale(0.98); border-color: var(--accent); }
+
+.dl-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; flex-shrink: 0;
+}
+
+.dl-info { flex: 1; }
+.dl-name { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+.dl-desc { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+.dl-size { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted); }
+.dl-arrow { font-size: 1rem; color: var(--muted); }
+
+/* ── Files Screen ── */
+.files-list { padding: 16px; }
+
+.file-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  display: flex; gap: 12px; align-items: center;
+}
+
+.file-thumb {
+  width: 54px; height: 54px;
+  background: var(--surface2);
+  border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
+}
+
+.file-info { flex: 1; min-width: 0; }
+.file-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-meta { font-size: 0.68rem; color: var(--muted); margin-top: 3px; }
+.file-tags { display: flex; gap: 4px; margin-top: 6px; }
+
+.tag {
+  font-size: 0.6rem; font-weight: 500;
+  padding: 2px 7px; border-radius: 6px;
+}
+.tag-svg { background: rgba(37,99,235,0.15); color: var(--accent-light); }
+.tag-dxf { background: rgba(16,185,129,0.15); color: var(--success); }
+
+.file-expire {
+  display: flex; align-items: center; gap: 3px;
+  font-size: 0.6rem; color: var(--warning); margin-top: 5px;
+}
+
+.file-actions { display: flex; flex-direction: column; gap: 6px; }
+.file-btn {
+  width: 34px; height: 34px;
+  border-radius: 9px; border: 1px solid var(--border);
+  background: var(--surface2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; transition: all 0.2s;
+}
+.file-btn:active { border-color: var(--accent); }
+
+/* Empty state */
+.empty-state {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; padding: 40px;
+  color: var(--muted); text-align: center;
+}
+.empty-icon { font-size: 3rem; opacity: 0.5; }
+.empty-title { font-size: 0.95rem; font-weight: 500; color: var(--text); }
+.empty-sub { font-size: 0.78rem; line-height: 1.6; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 10px 20px;
+  font-size: 0.82rem; font-weight: 500; white-space: nowrap;
+  opacity: 0; transition: all 0.3s; z-index: 100;
+  backdrop-filter: blur(8px); box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Animations ── */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+
+.subject-card { animation: fadeIn 0.3s ease forwards; }
+.subject-card:nth-child(1) { animation-delay: 0.05s; }
+.subject-card:nth-child(2) { animation-delay: 0.1s; }
+.subject-card:nth-child(3) { animation-delay: 0.15s; }
+.subject-card:nth-child(4) { animation-delay: 0.2s; }
+.subject-card:nth-child(5) { animation-delay: 0.25s; }
+.subject-card:nth-child(6) { animation-delay: 0.3s; }
+
+/* Demo SVG line art */
+.line-art { filter: invert(0); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">PJ</div>
+      <div>
+        <div class="logo-text">PJ</div>
+        <div class="logo-sub">แปลงรูปเป็นเส้นเลเซอร์</div>
+      </div>
+    </div>
+    <div class="header-action" onclick="showToast('⚙️ ตั้งค่า')">⚙️</div>
+  </div>
+
+  <!-- ── Screen 1: Upload ── -->
+  <div class="screen active" id="screen-upload">
+
+    <div class="upload-area" id="uploadArea" onclick="simulateUpload()">
+      <div class="upload-icon">🖼️</div>
+      <div class="upload-title">เพิ่มรูปภาพ</div>
+      <div class="upload-sub">รองรับ JPG, PNG, HEIC<br>รูปอะไรก็ได้ AI จะจำแนกให้</div>
+      <button class="btn-upload">📂 เลือกรูปจากคลัง</button>
+      <input type="file" accept="image/*" style="display:none" id="fileInput" onchange="handleFile(event)">
+    </div>
+
+    <div class="tips-section">
+      <div class="tips-title">💡 รูปแบบที่รองรับ</div>
+      <div class="tip-cards">
+        <div class="tip-card">
+          <div class="tip-card-icon">📸</div>
+          <div class="tip-card-title">รูปถ่ายทั่วไป</div>
+          <div class="tip-card-sub">AI แยก object ออกจากฉากหลังได้</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">✏️</div>
+          <div class="tip-card-title">ภาพวาดเส้น</div>
+          <div class="tip-card-sub">แปลงเป็น vector ได้ทันที</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">🎨</div>
+          <div class="tip-card-title">รูปสี/โลโก้</div>
+          <div class="tip-card-sub">ตัดรายละเอียด เหลือแต่เส้น</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">🔲</div>
+          <div class="tip-card-title">ขาวดำอยู่แล้ว</div>
+          <div class="tip-card-sub">แปลงเป็น DXF ได้เลย</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Screen 2: Processing ── -->
+  <div class="screen" id="screen-process">
+
+    <div class="process-header">
+      <div class="back-btn" onclick="goTo('upload')">←</div>
+      <div>
+        <div class="process-title">เลือก Object</div>
+        <div class="process-sub">แตะเพื่อเลือก / ยกเลิก</div>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-box">
+      <div class="preview-placeholder" id="previewPlaceholder">
+        <span style="font-size:2rem">🖼️</span>
+        <span>รูปที่อัปโหลด</span>
+      </div>
+      <img class="preview-img" id="previewImg" style="display:none" src="" alt="">
+
+      <!-- Analyzing overlay -->
+      <div class="analyzing-overlay" id="analyzingOverlay" style="display:none">
+        <div class="spinner"></div>
+        <div class="analyzing-text">AI กำลังวิเคราะห์รูป...</div>
+        <div class="analyzing-sub">กำลังจำแนก object ทั้งหมด</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+    </div>
+
+    <!-- Subjects -->
+    <div class="subjects-section" id="subjectsSection" style="display:none">
+      <div class="section-header">
+        <div class="section-title">🔍 พบ Object ทั้งหมด</div>
+        <div class="section-badge" id="subjectBadge">0 รายการ</div>
+      </div>
+      <div class="subjects-grid" id="subjectsGrid"></div>
+    </div>
+
+    <div class="action-bar" id="processActions" style="display:none">
+      <button class="btn btn-secondary" onclick="selectAll()">เลือกทั้งหมด</button>
+      <button class="btn btn-primary" onclick="goToExport()">แปลงเส้น →</button>
+    </div>
+
+  </div>
+
+  <!-- ── Screen 3: Export ── -->
+  <div class="screen" id="screen-export">
+
+    <div class="process-header">
+      <div class="back-btn" onclick="goTo('process')">←</div>
+      <div>
+        <div class="process-title">ปรับแต่งเส้น</div>
+        <div class="process-sub">ดูตัวอย่างและ Download</div>
+      </div>
+    </div>
+
+    <!-- Preview with SVG -->
+    <div class="export-preview">
+      <div class="export-canvas">
+        <!-- Demo SVG line art of a car -->
+        <svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg" id="previewSvg">
+          <!-- Car outline -->
+          <path d="M20 80 L20 65 L45 40 L80 35 L130 35 L160 50 L180 65 L180 80 Z" stroke="#1a1a2e" stroke-width="2.5" fill="none"/>
+          <!-- Windows -->
+          <path d="M50 60 L65 42 L100 40 L130 40 L148 60 Z" stroke="#1a1a2e" stroke-width="2" fill="none"/>
+          <!-- Wheels -->
+          <circle cx="55" cy="82" r="16" stroke="#1a1a2e" stroke-width="2.5" fill="none"/>
+          <circle cx="55" cy="82" r="8" stroke="#1a1a2e" stroke-width="1.5" fill="none"/>
+          <circle cx="145" cy="82" r="16" stroke="#1a1a2e" stroke-width="2.5" fill="none"/>
+          <circle cx="145" cy="82" r="8" stroke="#1a1a2e" stroke-width="1.5" fill="none"/>
+          <!-- Details -->
+          <line x1="90" y1="40" x2="90" y2="60" stroke="#1a1a2e" stroke-width="1.5"/>
+          <path d="M160 65 L170 65 L175 72" stroke="#1a1a2e" stroke-width="2" fill="none"/>
+          <path d="M20 65 L30 65 L25 72" stroke="#1a1a2e" stroke-width="2" fill="none"/>
+          <!-- Door lines -->
+          <line x1="90" y1="60" x2="90" y2="80" stroke="#1a1a2e" stroke-width="1.5" stroke-dasharray="3,2"/>
+        </svg>
+      </div>
+      <div class="export-toolbar">
+        <button class="export-tool active" onclick="setMode(this,'line')">
+          <div class="export-tool-icon">〰️</div>เส้นล้วน
+        </button>
+        <button class="export-tool" onclick="setMode(this,'detail')">
+          <div class="export-tool-icon">🔲</div>มีรายละเอียด
+        </button>
+        <button class="export-tool" onclick="setMode(this,'fill')">
+          <div class="export-tool-icon">⬛</div>ทึบ
+        </button>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-section">
+      <div class="control-card">
+        <div class="control-card-title">⚙️ ปรับเส้น</div>
+
+        <div class="control-row">
+          <div class="control-label">ความหนาเส้น</div>
+          <div class="control-value" id="strokeVal">1.5px</div>
+        </div>
+        <input type="range" min="0.5" max="5" step="0.5" value="1.5"
+          oninput="document.getElementById('strokeVal').textContent=this.value+'px'">
+
+        <div style="margin-top:12px">
+        <div class="control-row">
+          <div class="control-label">ความละเอียด</div>
+          <div class="control-value" id="detailVal">70%</div>
+        </div>
+        <input type="range" min="10" max="100" step="5" value="70"
+          oninput="document.getElementById('detailVal').textContent=this.value+'%'">
+        </div>
+
+        <div style="margin-top:14px">
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">เส้นในรายละเอียด</div>
+            <div class="toggle-sub">ล้อรถ หน้าต่าง ลวดลาย</div>
+          </div>
+          <div class="toggle on" id="detailToggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">ลบพื้นหลัง</div>
+            <div class="toggle-sub">เหลือเฉพาะ object ที่เลือก</div>
+          </div>
+          <div class="toggle on" id="bgToggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download -->
+    <div class="download-section">
+      <div class="download-title">📥 ดาวน์โหลดไฟล์</div>
+
+      <div class="dl-btn" onclick="downloadFile('SVG')">
+        <div class="dl-icon" style="background:rgba(37,99,235,0.15)">📐</div>
+        <div class="dl-info">
+          <div class="dl-name">SVG — ไฟล์กลาง</div>
+          <div class="dl-desc">Vector คุณภาพสูงสุด แปลงต่อได้ทุกรูปแบบ</div>
+          <div class="dl-size">~42 KB</div>
+        </div>
+        <div class="dl-arrow">↓</div>
+      </div>
+
+      <div class="dl-btn" onclick="downloadFile('DXF')">
+        <div class="dl-icon" style="background:rgba(16,185,129,0.15)">⚡</div>
+        <div class="dl-info">
+          <div class="dl-name">DXF — CypCut / เลเซอร์</div>
+          <div class="dl-desc">ใช้กับโปรแกรมตัดเลเซอร์ได้เลย</div>
+          <div class="dl-size">~38 KB</div>
+        </div>
+        <div class="dl-arrow">↓</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ── Screen 4: Files ── -->
+  <div class="screen" id="screen-files">
+    <div class="files-list">
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:14px;letter-spacing:0.05em">📁 ไฟล์ของฉัน — เก็บ 7 วัน</div>
+
+      <!-- File items -->
+      <div class="file-item">
+        <div class="file-thumb">🚗</div>
+        <div class="file-info">
+          <div class="file-name">รถยนต์_001</div>
+          <div class="file-meta">วันนี้ 14:32 น.</div>
+          <div class="file-tags">
+            <span class="tag tag-svg">SVG</span>
+            <span class="tag tag-dxf">DXF</span>
+          </div>
+          <div class="file-expire">⏱ ลบใน 7 วัน</div>
+        </div>
+        <div class="file-actions">
+          <div class="file-btn" onclick="showToast('📥 กำลังดาวน์โหลด...')">↓</div>
+          <div class="file-btn" onclick="showToast('🗑️ ลบแล้ว')">🗑</div>
+        </div>
+      </div>
+
+      <div class="file-item">
+        <div class="file-thumb">🏍️</div>
+        <div class="file-info">
+          <div class="file-name">มอเตอร์ไซค์_logo</div>
+          <div class="file-meta">เมื่อวาน 09:15 น.</div>
+          <div class="file-tags">
+            <span class="tag tag-svg">SVG</span>
+            <span class="tag tag-dxf">DXF</span>
+          </div>
+          <div class="file-expire">⏱ ลบใน 6 วัน</div>
+        </div>
+        <div class="file-actions">
+          <div class="file-btn" onclick="showToast('📥 กำลังดาวน์โหลด...')">↓</div>
+          <div class="file-btn" onclick="showToast('🗑️ ลบแล้ว')">🗑</div>
+        </div>
+      </div>
+
+      <div class="file-item">
+        <div class="file-thumb">🦁</div>
+        <div class="file-info">
+          <div class="file-name">สิงโต_ตราสัญลักษณ์</div>
+          <div class="file-meta">3 วันที่แล้ว</div>
+          <div class="file-tags">
+            <span class="tag tag-svg">SVG</span>
+            <span class="tag tag-dxf">DXF</span>
+          </div>
+          <div class="file-expire" style="color:var(--danger)">⚠️ ลบใน 4 วัน — ดาวน์โหลดด่วน!</div>
+        </div>
+        <div class="file-actions">
+          <div class="file-btn" onclick="showToast('📥 กำลังดาวน์โหลด...')">↓</div>
+          <div class="file-btn" onclick="showToast('🗑️ ลบแล้ว')">🗑</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="switchNav(this,'upload')">
+      <div class="nav-icon">➕</div>
+      <div class="nav-label">แปลงรูป</div>
+    </button>
+    <button class="nav-item" onclick="switchNav(this,'files')">
+      <div class="nav-icon">📁</div>
+      <div class="nav-label">ไฟล์ของฉัน</div>
+    </button>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Demo subjects data ──
+const DEMO_SUBJECTS = [
+  { emoji:'🚗', label:'รถยนต์', conf:'98%', selected:true },
+  { emoji:'🌳', label:'ต้นไม้', conf:'94%', selected:false },
+  { emoji:'🏢', label:'ตึก', conf:'91%', selected:false },
+  { emoji:'👤', label:'คน', conf:'87%', selected:false },
+  { emoji:'🛣️', label:'ถนน', conf:'83%', selected:false },
+  { emoji:'☁️', label:'เมฆ', conf:'79%', selected:false },
+];
+
+let subjects = JSON.parse(JSON.stringify(DEMO_SUBJECTS));
+
+// ── Navigation ──
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screen).classList.add('active');
+}
+
+function switchNav(btn, screen) {
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  goTo(screen);
+}
+
+// ── Upload simulation ──
+function simulateUpload() {
+  document.getElementById('fileInput').click();
+}
+
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  startProcessing(file);
+}
+
+document.getElementById('uploadArea').addEventListener('dragover', e => {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.add('drag');
+});
+document.getElementById('uploadArea').addEventListener('dragleave', () => {
+  document.getElementById('uploadArea').classList.remove('drag');
+});
+document.getElementById('uploadArea').addEventListener('drop', e => {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) startProcessing(file);
+});
+
+function startProcessing(file) {
+  goTo('process');
+
+  // Show image preview
+  if (file && file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      document.getElementById('previewImg').src = ev.target.result;
+      document.getElementById('previewImg').style.display = 'block';
+      document.getElementById('previewPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Show analyzing
+  document.getElementById('analyzingOverlay').style.display = 'flex';
+  document.getElementById('subjectsSection').style.display = 'none';
+  document.getElementById('processActions').style.display = 'none';
+
+  // Reset progress bar
+  const pf = document.getElementById('progressFill');
+  pf.style.animation = 'none';
+  pf.offsetHeight; // reflow
+  pf.style.animation = '';
+
+  // After 2.5s show results
+  setTimeout(showSubjects, 2600);
+}
+
+function showSubjects() {
+  document.getElementById('analyzingOverlay').style.display = 'none';
+  document.getElementById('subjectsSection').style.display = 'block';
+  document.getElementById('processActions').style.display = 'flex';
+
+  subjects = JSON.parse(JSON.stringify(DEMO_SUBJECTS));
+  renderSubjects();
+}
+
+function renderSubjects() {
+  const grid = document.getElementById('subjectsGrid');
+  grid.innerHTML = '';
+  subjects.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'subject-card' + (s.selected ? ' selected' : '');
+    card.innerHTML = `
+      <div class="subject-thumb">
+        <span>${s.emoji}</span>
+        <div class="subject-check">✓</div>
+      </div>
+      <div class="subject-label">${s.label}</div>
+      <div class="subject-conf">AI: ${s.conf}</div>
+    `;
+    card.onclick = () => toggleSubject(i);
+    grid.appendChild(card);
+  });
+  document.getElementById('subjectBadge').textContent = subjects.length + ' รายการ';
+}
+
+function toggleSubject(i) {
+  subjects[i].selected = !subjects[i].selected;
+  renderSubjects();
+}
+
+function selectAll() {
+  const allSelected = subjects.every(s => s.selected);
+  subjects.forEach(s => s.selected = !allSelected);
+  renderSubjects();
+}
+
+// ── Export ──
+function goToExport() {
+  const selected = subjects.filter(s => s.selected);
+  if (selected.length === 0) { showToast('⚠️ กรุณาเลือกอย่างน้อย 1 object'); return; }
+  goTo('export');
+}
+
+function setMode(btn, mode) {
+  document.querySelectorAll('.export-tool').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const svg = document.getElementById('previewSvg');
+  if (mode === 'fill') {
+    svg.querySelectorAll('path,circle,line').forEach(el => {
+      el.setAttribute('fill', el.tagName === 'line' ? 'none' : '#1a1a2e');
+    });
+  } else {
+    svg.querySelectorAll('path,circle').forEach(el => {
+      el.setAttribute('fill', 'none');
+    });
+  }
+}
+
+function downloadFile(type) {
+  showToast(`📥 กำลังดาวน์โหลด ${type}...`);
+  setTimeout(() => showToast(`✅ ดาวน์โหลด ${type} สำเร็จ!`), 1500);
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
