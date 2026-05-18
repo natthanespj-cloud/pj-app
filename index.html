@@ -543,7 +543,7 @@ async function goToExport() {
       },
       body: JSON.stringify({
         model: 'claude-opus-4-5',
-        max_tokens: 4000,
+        max_tokens: 8000,
         messages: [{
           role: 'user',
           content: [
@@ -553,15 +553,48 @@ async function goToExport() {
             },
             {
               type: 'text',
-              text: `ดูรูปนี้และสร้าง SVG line art ของ: ${selectedNames}
+              text: `คุณเป็นผู้เชี่ยวชาญด้านการแปลงรูปภาพเป็น SVG vector line art สำหรับเครื่องตัดเลเซอร์
 
-สร้าง SVG ที่:
-- viewBox="0 0 400 400"
-- พื้นหลังขาว background white
-- เส้นสีดำ stroke="#000000" stroke-width="2" fill="none"
-- วาดเส้นโครงร่างให้ใกล้เคียงรูปต้นฉบับมากที่สุด
-- ใช้ path, polyline, polygon, circle, ellipse, line ตามความเหมาะสม
-- ตอบเฉพาะ SVG code เท่านั้น ไม่มีข้อความอื่น ไม่มี markdown`
+งาน: สร้าง SVG outline ของ "${selectedNames}" จากรูปนี้
+
+กฎที่ต้องทำตามอย่างเคร่งครัด:
+
+1. OUTPUT FORMAT
+- ตอบเฉพาะ SVG code เท่านั้น ห้ามมีข้อความอื่นนำหน้าหรือตามหลัง
+- ห้ามใช้ markdown หรือ code block
+- เริ่มต้นด้วย <svg และจบด้วย </svg> เท่านั้น
+
+2. SVG SPECIFICATIONS  
+- viewBox="0 0 500 500"
+- xmlns="http://www.w3.org/2000/svg"
+- พื้นหลัง: <rect width="500" height="500" fill="white"/>
+- เส้นทั้งหมด: stroke="#000000" stroke-width="2.5" fill="none"
+- stroke-linecap="round" stroke-linejoin="round"
+
+3. OUTLINE STYLE (สำหรับเลเซอร์)
+- วาดเฉพาะ "เส้นขอบนอก" ของ object เท่านั้น
+- ไม่ต้องใส่รายละเอียดภายใน เช่น texture หรือ shading
+- เส้นต้องต่อเนื่อง ไม่ขาดตอน เพื่อให้เลเซอร์ตัดได้
+- ทุก path ต้องเป็น closed path (จบที่จุดเริ่มต้น) ถ้าเป็นรูปทรงปิด
+
+4. TRACING TECHNIQUE
+- วิเคราะห์ขอบของ object ในรูปอย่างละเอียด
+- ใช้ <path> พร้อม cubic bezier curves (C, c) เพื่อให้เส้นโค้งเรียบ
+- กำหนด coordinate ให้ object อยู่กึ่งกลาง viewBox พอดี
+- ปรับ scale ให้ object ใหญ่เต็ม viewBox ประมาณ 80-90%
+- ความละเอียดของ path: ใช้จุด control points มากพอที่เส้นโค้งจะเรียบสวย
+
+5. QUALITY CHECK
+- เส้นต้องเรียบ ไม่หยัก
+- ขนาดสัดส่วนต้องใกล้เคียงต้นฉบับ
+- object ต้องจำได้ว่าคืออะไร
+
+6. ข้อห้ามสำคัญที่สุด
+- ห้ามจินตนาการหรือเพิ่มเส้นที่ไม่มีในรูปต้นฉบับเด็ดขาด
+- ให้ trace ตามรูปที่เห็นจริงๆ เท่านั้น
+- ถ้าไม่เห็นเส้นในรูป ห้ามวาด
+- shape และสัดส่วนต้องตรงกับต้นฉบับ 100%
+- ห้ามเปลี่ยนรูปร่างหรือเพิ่มลดรายละเอียดเอง`
             }
           ]
         }]
