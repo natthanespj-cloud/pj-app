@@ -86,9 +86,29 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .subjects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .subject-card { background: var(--card); border: 2px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
 .subject-card.selected { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
-.subject-thumb { width: 100%; aspect-ratio: 1; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 2rem; position: relative; overflow: hidden; }
-.subject-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.subject-check { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; background: var(--accent); border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 0.65rem; color: white; }
+
+/* Thumbnail — รองรับทั้ง crop image และ emoji fallback */
+.subject-thumb {
+  width: 100%; aspect-ratio: 1; background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.subject-thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.2s;
+}
+.subject-card:active .subject-thumb img { transform: scale(1.04); }
+.subject-thumb .emoji-fallback { font-size: 2rem; }
+
+/* overlay gradient ด้านล่างของรูป ให้ชื่ออ่านง่าย */
+.subject-thumb::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 40%;
+  background: linear-gradient(transparent, rgba(7,13,26,0.7));
+  pointer-events: none;
+}
+
+.subject-check { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; background: var(--accent); border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 0.7rem; color: white; z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
 .subject-card.selected .subject-check { display: flex; }
 .subject-label { padding: 6px 6px 8px; font-size: 0.68rem; font-weight: 500; text-align: center; }
 .subject-conf { font-size: 0.58rem; color: var(--muted); text-align: center; margin-top: 1px; }
@@ -141,7 +161,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 .files-list { padding: 16px; }
 .file-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; }
 .file-thumb { width: 54px; height: 54px; background: var(--surface2); border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; overflow: hidden; }
-.file-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.file-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 .file-info { flex: 1; min-width: 0; }
 .file-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .file-meta { font-size: 0.68rem; color: var(--muted); margin-top: 3px; }
@@ -345,6 +365,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 // ── State ──
 let apiKey = localStorage.getItem('pj_api_key') || '';
 let currentImageBase64 = '';
+let currentImageDataUrl = '';
 let subjects = [];
 let selectedSubjects = [];
 let currentSvg = '';
@@ -353,9 +374,7 @@ let savedFiles = JSON.parse(localStorage.getItem('pj_files') || '[]');
 
 // ── Init ──
 function init() {
-  if (apiKey) {
-    document.getElementById('apiBanner').classList.add('hidden');
-  }
+  if (apiKey) document.getElementById('apiBanner').classList.add('hidden');
   renderFiles();
 }
 
@@ -364,9 +383,7 @@ function showApiModal() {
   document.getElementById('apiModal').classList.remove('hidden');
   document.getElementById('apiKeyInput').value = apiKey;
 }
-function closeApiModal() {
-  document.getElementById('apiModal').classList.add('hidden');
-}
+function closeApiModal() { document.getElementById('apiModal').classList.add('hidden'); }
 function saveApiKey() {
   const key = document.getElementById('apiKeyInput').value.trim();
   if (!key.startsWith('sk-ant-')) { showToast('⚠️ API Key ไม่ถูกต้อง'); return; }
@@ -393,12 +410,11 @@ function handleFile(e) {
   const file = e.target.files[0];
   if (!file) return;
   if (!apiKey) { showApiModal(); return; }
-
   const reader = new FileReader();
   reader.onload = ev => {
-    const dataUrl = ev.target.result;
-    currentImageBase64 = dataUrl.split(',')[1];
-    document.getElementById('previewImg').src = dataUrl;
+    currentImageDataUrl = ev.target.result;
+    currentImageBase64 = currentImageDataUrl.split(',')[1];
+    document.getElementById('previewImg').src = currentImageDataUrl;
     document.getElementById('previewImg').style.display = 'block';
     document.getElementById('previewPlaceholder').style.display = 'none';
     goTo('process');
@@ -407,13 +423,38 @@ function handleFile(e) {
   reader.readAsDataURL(file);
 }
 
+// ── Crop thumbnail จากรูปต้นฉบับด้วย Canvas ──
+function cropThumbnail(dataUrl, bbox) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const SIZE = 200; // thumbnail px
+      canvas.width = SIZE;
+      canvas.height = SIZE;
+      const ctx = canvas.getContext('2d');
+
+      // เพิ่ม padding เล็กน้อยรอบ bbox
+      const pad = 0.04;
+      const x = Math.max(0, bbox.x - pad) * img.width;
+      const y = Math.max(0, bbox.y - pad) * img.height;
+      const w = Math.min(img.width - x, (bbox.w + pad * 2) * img.width);
+      const h = Math.min(img.height - y, (bbox.h + pad * 2) * img.height);
+
+      ctx.drawImage(img, x, y, w, h, 0, 0, SIZE, SIZE);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = () => resolve(null);
+    img.src = dataUrl;
+  });
+}
+
 // ── Claude API: Analyze Image ──
 async function analyzeImage(filename) {
   document.getElementById('analyzingOverlay').style.display = 'flex';
   document.getElementById('subjectsSection').style.display = 'none';
   document.getElementById('processActions').style.display = 'none';
 
-  // Animate progress
   let progress = 0;
   const pf = document.getElementById('progressFill');
   const progressInterval = setInterval(() => {
@@ -424,7 +465,7 @@ async function analyzeImage(filename) {
   const steps = [
     { text: 'AI กำลังวิเคราะห์รูป...', sub: 'กำลังประมวลผลภาพ' },
     { text: 'จำแนก object...', sub: 'แยกสิ่งของในรูปออกจากกัน' },
-    { text: 'คำนวณขอบเขต...', sub: 'วิเคราะห์รายละเอียดแต่ละ object' },
+    { text: 'คำนวณขอบเขต...', sub: 'วิเคราะห์ตำแหน่งแต่ละ object' },
   ];
   let stepIdx = 0;
   const stepInterval = setInterval(() => {
@@ -446,19 +487,22 @@ async function analyzeImage(filename) {
       },
       body: JSON.stringify({
         model: 'claude-opus-4-5',
-        max_tokens: 1000,
+        max_tokens: 1500,
         messages: [{
           role: 'user',
           content: [
-            {
-              type: 'image',
-              source: { type: 'base64', media_type: 'image/jpeg', data: currentImageBase64 }
-            },
+            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: currentImageBase64 } },
             {
               type: 'text',
               text: `วิเคราะห์รูปนี้และจำแนก object ทั้งหมดที่เห็น ตอบเป็น JSON เท่านั้น ไม่ต้องมีข้อความอื่น รูปแบบ:
-{"objects":[{"name":"ชื่อภาษาไทย","emoji":"emoji","confidence":95,"description":"คำอธิบายสั้น"}]}
-จำแนกให้ครบทุก object สำคัญในรูป สูงสุด 9 รายการ`
+{"objects":[{"name":"ชื่อภาษาไทย","emoji":"emoji","confidence":95,"description":"คำอธิบายสั้น","bbox":{"x":0.10,"y":0.05,"w":0.40,"h":0.60}}]}
+
+กฎสำคัญ:
+- bbox คือตำแหน่งของ object ในรูป เป็นสัดส่วน 0.0–1.0
+- x, y = มุมบนซ้ายของ bounding box
+- w, h = ความกว้าง และความสูงของ bounding box
+- ต้องระบุ bbox ทุก object ให้แม่นยำที่สุด
+- จำแนกให้ครบทุก object สำคัญในรูป สูงสุด 9 รายการ`
             }
           ]
         }]
@@ -475,16 +519,33 @@ async function analyzeImage(filename) {
     const text = data.content[0].text;
     const clean = text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
-    subjects = parsed.objects.map((o, i) => ({ ...o, id: i, selected: i === 0 }));
+
+    // สร้าง subjects พร้อม cropDataUrl = null ก่อน
+    subjects = parsed.objects.map((o, i) => ({ ...o, id: i, selected: i === 0, cropDataUrl: null }));
+
+    // อัปเดต UI ให้เห็น overlay หายก่อน แล้วค่อย crop
+    document.getElementById('analyzingText').textContent = 'ครอปรูป object...';
+    document.getElementById('analyzingSub').textContent = 'กำลังตัดรูปแต่ละชิ้น';
+
+    // Crop ทุก object พร้อมกัน
+    await Promise.all(subjects.map(async (s, i) => {
+      if (s.bbox) {
+        try {
+          subjects[i].cropDataUrl = await cropThumbnail(currentImageDataUrl, s.bbox);
+        } catch (e) {
+          subjects[i].cropDataUrl = null;
+        }
+      }
+    }));
 
     setTimeout(() => {
       document.getElementById('analyzingOverlay').style.display = 'none';
       document.getElementById('subjectsSection').style.display = 'block';
       document.getElementById('processActions').style.display = 'flex';
-      document.getElementById('processSubtitle').textContent = 'แตะเพื่อเลือก / ยกเลิก';
+      document.getElementById('processSubtitle').textContent = 'แตะรูปเพื่อเลือก / ยกเลิก';
       document.getElementById('subjectBadge').textContent = subjects.length + ' รายการ';
       renderSubjects();
-    }, 500);
+    }, 300);
 
   } catch (err) {
     clearInterval(progressInterval);
@@ -495,16 +556,22 @@ async function analyzeImage(filename) {
   }
 }
 
-// ── Render Subjects ──
+// ── Render Subjects — แสดง crop รูปจริง หรือ emoji ถ้าไม่มี bbox ──
 function renderSubjects() {
   const grid = document.getElementById('subjectsGrid');
   grid.innerHTML = '';
   subjects.forEach((s, i) => {
     const card = document.createElement('div');
-    card.className = 'subject-card' + (s.selected ? ' selected' : '');
+    card.className = 'subject-card fade-in' + (s.selected ? ' selected' : '');
+
+    // ถ้ามี crop ใช้รูปจริง ถ้าไม่มีใช้ emoji
+    const thumbHTML = s.cropDataUrl
+      ? `<img src="${s.cropDataUrl}" alt="${s.name}" loading="lazy">`
+      : `<span class="emoji-fallback">${s.emoji}</span>`;
+
     card.innerHTML = `
       <div class="subject-thumb">
-        <span style="font-size:2rem">${s.emoji}</span>
+        ${thumbHTML}
         <div class="subject-check">✓</div>
       </div>
       <div class="subject-label">${s.name}</div>
@@ -547,10 +614,7 @@ async function goToExport() {
         messages: [{
           role: 'user',
           content: [
-            {
-              type: 'image',
-              source: { type: 'base64', media_type: 'image/jpeg', data: currentImageBase64 }
-            },
+            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: currentImageBase64 } },
             {
               type: 'text',
               text: `คุณเป็นผู้เชี่ยวชาญด้านการแปลงรูปภาพเป็น SVG vector line art สำหรับเครื่องตัดเลเซอร์
@@ -564,7 +628,7 @@ async function goToExport() {
 - ห้ามใช้ markdown หรือ code block
 - เริ่มต้นด้วย <svg และจบด้วย </svg> เท่านั้น
 
-2. SVG SPECIFICATIONS  
+2. SVG SPECIFICATIONS
 - viewBox="0 0 500 500"
 - xmlns="http://www.w3.org/2000/svg"
 - พื้นหลัง: <rect width="500" height="500" fill="white"/>
@@ -575,24 +639,21 @@ async function goToExport() {
 - วาดเฉพาะ "เส้นขอบนอก" ของ object เท่านั้น
 - ไม่ต้องใส่รายละเอียดภายใน เช่น texture หรือ shading
 - เส้นต้องต่อเนื่อง ไม่ขาดตอน เพื่อให้เลเซอร์ตัดได้
-- ทุก path ต้องเป็น closed path (จบที่จุดเริ่มต้น) ถ้าเป็นรูปทรงปิด
+- ทุก path ต้องเป็น closed path ถ้าเป็นรูปทรงปิด
 
 4. TRACING TECHNIQUE
 - วิเคราะห์ขอบของ object ในรูปอย่างละเอียด
-- ใช้ <path> พร้อม cubic bezier curves (C, c) เพื่อให้เส้นโค้งเรียบ
+- ใช้ <path> พร้อม cubic bezier curves (C, c)
 - กำหนด coordinate ให้ object อยู่กึ่งกลาง viewBox พอดี
 - ปรับ scale ให้ object ใหญ่เต็ม viewBox ประมาณ 80-90%
-- ความละเอียดของ path: ใช้จุด control points มากพอที่เส้นโค้งจะเรียบสวย
 
 5. QUALITY CHECK
 - เส้นต้องเรียบ ไม่หยัก
 - ขนาดสัดส่วนต้องใกล้เคียงต้นฉบับ
-- object ต้องจำได้ว่าคืออะไร
 
 6. ข้อห้ามสำคัญที่สุด
 - ห้ามจินตนาการหรือเพิ่มเส้นที่ไม่มีในรูปต้นฉบับเด็ดขาด
 - ให้ trace ตามรูปที่เห็นจริงๆ เท่านั้น
-- ถ้าไม่เห็นเส้นในรูป ห้ามวาด
 - shape และสัดส่วนต้องตรงกับต้นฉบับ 100%
 - ห้ามเปลี่ยนรูปร่างหรือเพิ่มลดรายละเอียดเอง`
             }
@@ -612,10 +673,9 @@ async function goToExport() {
 
     currentSvg = svgText;
     canvas.innerHTML = svgText;
-    canvas.querySelector('svg').style.maxWidth = '100%';
-    canvas.querySelector('svg').style.maxHeight = '100%';
+    const svgEl = canvas.querySelector('svg');
+    if (svgEl) { svgEl.style.maxWidth = '100%'; svgEl.style.maxHeight = '100%'; }
 
-    // Save to files
     saveFile(selectedNames);
 
   } catch (err) {
@@ -637,8 +697,7 @@ function setStrokeColor(btn, color) {
 
 function updateStroke(val) {
   document.getElementById('strokeVal').textContent = val + 'px';
-  const canvas = document.getElementById('exportCanvas');
-  canvas.querySelectorAll('[stroke-width]').forEach(el => el.setAttribute('stroke-width', val));
+  document.getElementById('exportCanvas').querySelectorAll('[stroke-width]').forEach(el => el.setAttribute('stroke-width', val));
 }
 
 // ── Downloads ──
@@ -654,7 +713,6 @@ function downloadSVG() {
 
 function downloadDXF() {
   if (!currentSvg) { showToast('⚠️ ยังไม่มีไฟล์'); return; }
-  // Basic DXF from SVG paths (simplified)
   const dxf = `0\nSECTION\n2\nHEADER\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n0\nTEXT\n8\n0\n10\n10.0\n20\n10.0\n30\n0.0\n40\n5.0\n1\nPJ App Export\n0\nENDSEC\n0\nEOF`;
   const blob = new Blob([dxf], { type: 'application/dxf' });
   const a = document.createElement('a');
@@ -664,15 +722,14 @@ function downloadDXF() {
   showToast('✅ ดาวน์โหลด DXF แล้ว');
 }
 
-// ── Save Files ──
+// ── Save / Render Files ──
 function saveFile(name) {
   const file = {
-    id: Date.now(),
-    name: name,
+    id: Date.now(), name,
     date: new Date().toLocaleDateString('th-TH'),
     expiry: Date.now() + 7 * 24 * 60 * 60 * 1000,
     svg: currentSvg,
-    thumb: currentImageBase64.substring(0, 100)
+    thumb: currentImageDataUrl ? currentImageDataUrl.substring(0, 200) : null
   };
   savedFiles.unshift(file);
   if (savedFiles.length > 20) savedFiles = savedFiles.slice(0, 20);
@@ -683,8 +740,6 @@ function saveFile(name) {
 function renderFiles() {
   const list = document.getElementById('filesList');
   const header = '<div style="font-size:0.75rem;color:var(--muted);margin-bottom:14px;letter-spacing:0.05em">📁 ไฟล์ของฉัน — เก็บ 7 วัน</div>';
-
-  // Clean expired
   const now = Date.now();
   savedFiles = savedFiles.filter(f => f.expiry > now);
   localStorage.setItem('pj_files', JSON.stringify(savedFiles));
@@ -697,8 +752,11 @@ function renderFiles() {
   const items = savedFiles.map(f => {
     const daysLeft = Math.ceil((f.expiry - now) / (24*60*60*1000));
     const urgent = daysLeft <= 3;
+    const thumbHTML = f.thumb
+      ? `<img src="${f.thumb}" alt="">`
+      : '✏️';
     return `<div class="file-item">
-      <div class="file-thumb">✏️</div>
+      <div class="file-thumb">${thumbHTML}</div>
       <div class="file-info">
         <div class="file-name">${f.name}</div>
         <div class="file-meta">${f.date}</div>
@@ -711,7 +769,6 @@ function renderFiles() {
       </div>
     </div>`;
   }).join('');
-
   list.innerHTML = header + items;
 }
 
