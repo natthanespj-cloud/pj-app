@@ -489,121 +489,52 @@ function resetPaths() {
   updatePathCount();
 }
 
-// ── DXF Export (SVG path → DXF LWPOLYLINE) async ──
+// ── DXF Export — ส่งไป backend แปลงด้วย ezdxf + bulge ──
 async function downloadDXF() {
   const svgEl = document.querySelector('#svgContainer svg');
   if (!svgEl) { showToast('⚠️ ไม่มีข้อมูล'); return; }
 
   const paths = Array.from(svgEl.querySelectorAll('path, polygon, polyline'));
-  const selectedPaths = paths.filter((_, i) => !deselectedPaths.has(i));
+  const selectedIndices = paths.map((_, i) => i).filter(i => !deselectedPaths.has(i));
 
-  if (selectedPaths.length === 0) { showToast('⚠️ กรุณาเลือกอย่างน้อย 1 path'); return; }
+  if (selectedIndices.length === 0) { showToast('⚠️ กรุณาเลือกอย่างน้อย 1 path'); return; }
 
-  // แสดง loading
   const btn = document.getElementById('btnDXF');
   btn.disabled = true;
   btn.textContent = '⏳ กำลังสร้าง DXF...';
 
-  // รอ 1 frame ก่อนเริ่ม (ให้ UI อัปเดตก่อน)
-  await new Promise(r => setTimeout(r, 50));
+  try {
+    const formData = new FormData();
+    formData.append('svg', currentSvgContent);
+    formData.append('selected', selectedIndices.join(','));
 
-  // Get SVG dimensions
-  const vb = svgEl.viewBox.baseVal;
-  const svgH = vb.height || svgEl.getBoundingClientRect().height || 500;
-
-  // สร้าง hidden SVG สำหรับ calculate path lengths
-  const tempSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  tempSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-  tempSvg.style.position = 'absolute';
-  tempSvg.style.visibility = 'hidden';
-  tempSvg.style.top = '-9999px';
-  document.body.appendChild(tempSvg);
-
-  let entities = '';
-
-  for (const origPath of selectedPaths) {
-    // Clone path ไปใน temp SVG เพื่อ getTotalLength
-    const cloned = origPath.cloneNode(true);
-    tempSvg.appendChild(cloned);
-
-    let pts = [];
-
-    if (cloned.tagName.toLowerCase() === 'path') {
-      const totalLen = cloned.getTotalLength();
-      if (totalLen <= 0) { tempSvg.removeChild(cloned); continue; }
-      // สุ่มจุดสูงสุด 1500 จุดต่อ path — ละเอียดพอสำหรับ CypCut ไม่ค้าง
-      const numPts = Math.min(1500, Math.max(4, Math.round(totalLen / 2)));
-      for (let i = 0; i <= numPts; i++) {
-        const pt = cloned.getPointAtLength((i / numPts) * totalLen);
-        pts.push([pt.x, svgH - pt.y]); // flip Y
-      }
-    } else {
-      // polygon / polyline — ใช้ points โดยตรง
-      const pointsList = cloned.points;
-      if (!pointsList) { tempSvg.removeChild(cloned); continue; }
-      for (let i = 0; i < pointsList.numberOfItems; i++) {
-        const pt = pointsList.getItem(i);
-        pts.push([pt.x, svgH - pt.y]);
-      }
-    }
-
-    if (pts.length < 2) { tempSvg.removeChild(cloned); continue; }
-
-    // Check if closed
-    const dAttr = (cloned.getAttribute('d') || '').trim();
-    const isClosed = /z\s*$/i.test(dAttr) || cloned.tagName.toLowerCase() === 'polygon' ? 1 : 0;
-
-    // สร้าง LWPOLYLINE
-    entities += `0\nLWPOLYLINE\n8\n0\n66\n1\n90\n${pts.length}\n70\n${isClosed}\n`;
-    pts.forEach(([x, y]) => {
-      entities += `10\n${x.toFixed(4)}\n20\n${y.toFixed(4)}\n30\n0.0000\n`;
+    const resp = await fetch(`${BACKEND_URL}/export-dxf`, {
+      method: 'POST',
+      body: formData
     });
 
-    tempSvg.removeChild(cloned);
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
+      throw new Error(err.detail || 'Export error');
+    }
 
-    // yield ให้ browser หายใจทุก path
-    await new Promise(r => setTimeout(r, 0));
+    const blob = await resp.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'pj-result.dxf';
+    a.click();
+    URL.revokeObjectURL(a.href);
+
+    showToast(`✅ ดาวน์โหลด DXF แล้ว (${selectedIndices.length} paths)`);
+    saveFileRecord();
+
+  } catch (err) {
+    showToast('❌ ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬇ Download DXF';
+    updatePathCount();
   }
-
-  document.body.removeChild(tempSvg);
-
-  btn.disabled = false;
-  btn.textContent = '⬇ Download DXF';
-
-  if (!entities) { showToast('❌ ไม่สามารถสร้าง DXF ได้'); return; }
-
-  // สร้าง DXF string
-  const dxf = [
-    '0', 'SECTION', '2', 'HEADER',
-    '9', '$ACADVER', '1', 'AC1015',
-    '9', '$INSUNITS', '70', '4',
-    '9', '$MEASUREMENT', '70', '1',
-    '9', '$AUNITS', '70', '0',
-    '0', 'ENDSEC',
-    '0', 'SECTION', '2', 'TABLES',
-    '0', 'TABLE', '2', 'LTYPE', '70', '1',
-    '0', 'LTYPE', '2', 'Continuous', '70', '0', '3', 'Solid line', '72', '65', '73', '0', '40', '0.0',
-    '0', 'ENDTAB',
-    '0', 'TABLE', '2', 'LAYER', '70', '1',
-    '0', 'LAYER', '2', '0', '70', '0', '62', '7', '6', 'Continuous',
-    '0', 'ENDTAB',
-    '0', 'ENDSEC',
-    '0', 'SECTION', '2', 'ENTITIES',
-    entities.trim(),
-    '0', 'ENDSEC',
-    '0', 'EOF'
-  ].join('\n');
-
-  // Download
-  const blob = new Blob([dxf], { type: 'application/dxf' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'pj-result.dxf';
-  a.click();
-  URL.revokeObjectURL(a.href);
-
-  showToast(`✅ ดาวน์โหลด DXF แล้ว (${selectedPaths.length} paths)`);
-  saveFileRecord();
 }
 
 // ── Save file record ──
