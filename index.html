@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PJ â à¹à¸à¸¥à¸à¸£à¸¹à¸à¹à¸à¹à¸à¹à¸ªà¹à¸</title>
+<title>PJ — แปลงรูปเป็นเส้น</title>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -60,7 +60,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .screen-title { font-size: 1rem; font-weight: 600; }
 .screen-sub { font-size: 0.72rem; color: var(--muted); }
 
-/* ââ Screen 2: Threshold ââ */
+/* ── Screen 2: Threshold ── */
 .threshold-images { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 16px; }
 .img-box { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); aspect-ratio: 4/3; position: relative; background: var(--surface2); }
 .img-box img, .img-box canvas { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -87,7 +87,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
 .loading-text { font-size: 0.9rem; font-weight: 500; }
 .loading-sub { font-size: 0.72rem; color: var(--muted); text-align: center; }
 
-/* ââ Screen 3: Path Selection / Result ââ */
+/* ── Screen 3: Path Selection / Result ── */
 .svg-container { margin: 12px 16px; border-radius: 16px; overflow: hidden; background: white; border: 2px solid var(--border); position: relative; }
 .svg-container svg { width: 100%; height: auto; display: block; }
 
@@ -154,39 +154,39 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
       <div class="logo-icon">PJ</div>
       <div>
         <div class="logo-text">PJ</div>
-        <div class="logo-sub">à¹à¸à¸¥à¸à¸£à¸¹à¸à¹à¸à¹à¸à¹à¸ªà¹à¸à¹à¸¥à¹à¸à¸­à¸£à¹</div>
+        <div class="logo-sub">แปลงรูปเป็นเส้นเลเซอร์</div>
       </div>
     </div>
-    <div style="width:36px;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem" onclick="showSettings()">âï¸</div>
+    <div style="width:36px;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem" onclick="showSettings()">⚙️</div>
   </div>
 
-  <!-- ââ Screen 1: Upload ââ -->
+  <!-- ── Screen 1: Upload ── -->
   <div class="screen active" id="screen-upload">
     <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-      <div class="upload-icon">ð¼ï¸</div>
-      <div class="upload-title">à¹à¸à¸´à¹à¸¡à¸£à¸¹à¸à¸ à¸²à¸</div>
-      <div class="upload-sub">à¸£à¸­à¸à¸£à¸±à¸ JPG, PNG, HEIC<br>à¸à¸£à¸±à¸à¸à¸§à¸²à¸¡à¹à¸à¹à¸¡à¹à¸ªà¹à¸à¹à¸à¹à¹à¸­à¸ à¹à¸¡à¹à¸à¸¢à¸³ 100%</div>
-      <button class="btn-upload">ð à¹à¸¥à¸·à¸­à¸à¸£à¸¹à¸à¸à¸²à¸à¸à¸¥à¸±à¸</button>
+      <div class="upload-icon">🖼️</div>
+      <div class="upload-title">เพิ่มรูปภาพ</div>
+      <div class="upload-sub">รองรับ JPG, PNG, HEIC<br>ปรับความเข้มเส้นได้เอง แม่นยำ 100%</div>
+      <button class="btn-upload">📂 เลือกรูปจากคลัง</button>
       <input type="file" accept="image/*" style="display:none" id="fileInput" onchange="handleFile(event)">
     </div>
     <div class="tips-section">
-      <div class="tips-title">ð¡ à¸£à¸¹à¸à¹à¸à¸à¸à¸µà¹à¹à¸à¹à¸à¸¥à¸à¸µà¸à¸µà¹à¸ªà¸¸à¸</div>
+      <div class="tips-title">💡 รูปแบบที่ได้ผลดีที่สุด</div>
       <div class="tip-cards">
-        <div class="tip-card"><div class="tip-card-icon">ð²</div><div class="tip-card-title">à¸à¸²à¸§à¸à¸³à¸à¸±à¸à¹à¸à¸</div><div class="tip-card-sub">à¸à¸¥à¸¥à¸±à¸à¸à¹à¹à¸¡à¹à¸à¸¢à¸³à¸à¸µà¹à¸ªà¸¸à¸</div></div>
-        <div class="tip-card"><div class="tip-card-icon">âï¸</div><div class="tip-card-title">à¸ à¸²à¸à¸§à¸²à¸à¹à¸ªà¹à¸</div><div class="tip-card-sub">à¹à¸ªà¹à¸à¸à¸±à¸ à¹à¸¡à¹à¸¡à¸µà¸à¸²à¸à¸«à¸¥à¸±à¸à¸à¸±à¸à¸à¹à¸­à¸</div></div>
-        <div class="tip-card"><div class="tip-card-icon">ð¨</div><div class="tip-card-title">à¹à¸¥à¹à¸à¹ / à¸¥à¸²à¸¢à¸à¸¥à¸¸</div><div class="tip-card-sub">contrast à¸ªà¸¹à¸ à¹à¸à¹à¸à¸¥à¸à¸µà¸¡à¸²à¸</div></div>
-        <div class="tip-card"><div class="tip-card-icon">ð¸</div><div class="tip-card-title">à¸£à¸¹à¸à¸à¹à¸²à¸¢à¸à¸±à¹à¸§à¹à¸</div><div class="tip-card-sub">à¸à¸£à¸±à¸ threshold à¸à¹à¸§à¸¢à¹à¸à¹</div></div>
+        <div class="tip-card"><div class="tip-card-icon">🔲</div><div class="tip-card-title">ขาวดำชัดเจน</div><div class="tip-card-sub">ผลลัพธ์แม่นยำที่สุด</div></div>
+        <div class="tip-card"><div class="tip-card-icon">✏️</div><div class="tip-card-title">ภาพวาดเส้น</div><div class="tip-card-sub">เส้นชัด ไม่มีฉากหลังซับซ้อน</div></div>
+        <div class="tip-card"><div class="tip-card-icon">🎨</div><div class="tip-card-title">โลโก้ / ลายฉลุ</div><div class="tip-card-sub">contrast สูง ได้ผลดีมาก</div></div>
+        <div class="tip-card"><div class="tip-card-icon">📸</div><div class="tip-card-title">รูปถ่ายทั่วไป</div><div class="tip-card-sub">ปรับ threshold ช่วยได้</div></div>
       </div>
     </div>
   </div>
 
-  <!-- ââ Screen 2: Threshold Preview ââ -->
+  <!-- ── Screen 2: Threshold Preview ── -->
   <div class="screen" id="screen-threshold">
     <div class="screen-header">
-      <div class="back-btn" onclick="goTo('upload')">â</div>
+      <div class="back-btn" onclick="goTo('upload')">←</div>
       <div style="flex:1">
-        <div class="screen-title" id="thresholdTitle">à¸à¸£à¸±à¸à¸à¸§à¸²à¸¡à¹à¸à¹à¸¡à¹à¸ªà¹à¸</div>
-        <div class="screen-sub" id="thresholdSub">à¹à¸¥à¸·à¹à¸­à¸ slider à¸à¸à¹à¸«à¹à¸à¹à¸ªà¹à¸à¸à¸±à¸à¸à¸µà¹à¸ªà¸¸à¸</div>
+        <div class="screen-title" id="thresholdTitle">ปรับความเข้มเส้น</div>
+        <div class="screen-sub" id="thresholdSub">เลื่อน slider จนเห็นเส้นชัดที่สุด</div>
       </div>
       <div id="modeBadge" style="display:none;font-size:0.65rem;font-weight:600;padding:4px 10px;border-radius:8px;background:rgba(37,99,235,0.15);color:var(--accent-light);white-space:nowrap;border:1px solid rgba(59,130,246,0.3)"></div>
     </div>
@@ -194,30 +194,30 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
     <!-- Split preview: original vs processed -->
     <div class="threshold-images">
       <div class="img-box">
-        <img id="origImg" src="" alt="à¸à¹à¸à¸à¸à¸±à¸">
-        <div class="img-label">à¸à¹à¸à¸à¸à¸±à¸</div>
+        <img id="origImg" src="" alt="ต้นฉบับ">
+        <div class="img-label">ต้นฉบับ</div>
       </div>
       <div class="img-box">
         <!-- B&W canvas (B&W image mode) -->
         <canvas id="bwCanvas" style="width:100%;height:100%;object-fit:contain;display:block;"></canvas>
         <!-- Preprocessed result (color image mode) -->
-        <img id="preprocessedImg" src="" alt="à¸à¸¥à¸¥à¸±à¸à¸à¹" style="display:none;width:100%;height:100%;object-fit:contain;">
-        <div class="img-label" id="resultLabel">à¸à¸¥à¸¥à¸±à¸à¸à¹</div>
+        <img id="preprocessedImg" src="" alt="ผลลัพธ์" style="display:none;width:100%;height:100%;object-fit:contain;">
+        <div class="img-label" id="resultLabel">ผลลัพธ์</div>
       </div>
     </div>
 
     <!-- Controls: threshold (B&W mode only) -->
     <div class="controls-card" id="thresholdControls">
       <div class="ctrl-row">
-        <div class="ctrl-label">â« à¸à¸§à¸²à¸¡à¹à¸à¹à¸¡à¹à¸ªà¹à¸ (Threshold)</div>
+        <div class="ctrl-label">⚫ ความเข้มเส้น (Threshold)</div>
         <div class="ctrl-value" id="thresholdVal">128</div>
       </div>
       <input type="range" id="thresholdSlider" min="0" max="255" value="128"
              oninput="onThresholdChange(this.value)">
       <div class="toggle-row">
         <div>
-          <div class="toggle-label">à¸à¸¥à¸±à¸à¸ªà¸µ (Invert)</div>
-          <div class="toggle-sub">à¹à¸à¹à¹à¸¡à¸·à¹à¸­ object à¹à¸à¹à¸à¸ªà¸µà¸à¸²à¸§à¸à¸à¸à¸·à¹à¸à¸à¸³</div>
+          <div class="toggle-label">กลับสี (Invert)</div>
+          <div class="toggle-sub">ใช้เมื่อ object เป็นสีขาวบนพื้นดำ</div>
         </div>
         <div class="toggle" id="invertToggle" onclick="toggleInvert()"></div>
       </div>
@@ -226,37 +226,37 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
     <!-- Info card: color mode -->
     <div class="controls-card" id="colorModeInfo" style="display:none;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <div style="font-size:1.6rem;flex-shrink:0;">ð¨</div>
+        <div style="font-size:1.6rem;flex-shrink:0;">🎨</div>
         <div>
-          <div style="font-size:0.82rem;font-weight:500;margin-bottom:2px;" id="colorModeDesc">à¸à¸£à¸§à¸à¸à¸à¸£à¸¹à¸à¸ªà¸µ â à¸à¸¶à¸à¹à¸ªà¹à¸à¸­à¸±à¸à¹à¸à¸¡à¸±à¸à¸´à¹à¸¥à¹à¸§</div>
-          <div style="font-size:0.7rem;color:var(--muted);">à¸à¸§à¸² = à¹à¸ªà¹à¸à¸à¸µà¹à¸à¸°à¹à¸à¹ trace à¹à¸à¹à¸ DXF</div>
+          <div style="font-size:0.82rem;font-weight:500;margin-bottom:2px;" id="colorModeDesc">ตรวจพบรูปสี — ดึงเส้นอัตโนมัติแล้ว</div>
+          <div style="font-size:0.7rem;color:var(--muted);">ขวา = เส้นที่จะใช้ trace เป็น DXF</div>
         </div>
       </div>
     </div>
 
     <!-- Send button -->
     <div class="action-bar" style="position:relative;background:none;">
-      <button class="btn btn-secondary" onclick="goTo('upload')">à¹à¸à¸¥à¸µà¹à¸¢à¸à¸£à¸¹à¸</button>
+      <button class="btn btn-secondary" onclick="goTo('upload')">เปลี่ยนรูป</button>
       <button class="btn btn-primary" id="btnTrace" onclick="sendToBackend()">
-        â¨ à¹à¸à¸¥à¸à¹à¸ªà¹à¸ â
+        ✨ แปลงเส้น →
       </button>
     </div>
 
     <!-- Loading overlay (preprocess + trace) -->
     <div class="loading-overlay" id="traceLoading" style="display:none">
       <div class="spinner"></div>
-      <div class="loading-text" id="traceLoadingText">à¸à¸³à¸¥à¸±à¸à¸§à¸´à¹à¸à¸£à¸²à¸°à¸«à¹à¸ªà¸µ...</div>
-      <div class="loading-sub" id="traceLoadingSub">OpenCV à¸à¸³à¸¥à¸±à¸à¸à¸¶à¸à¹à¸ªà¹à¸</div>
+      <div class="loading-text" id="traceLoadingText">กำลังวิเคราะห์สี...</div>
+      <div class="loading-sub" id="traceLoadingSub">OpenCV กำลังดึงเส้น</div>
     </div>
   </div>
 
-  <!-- ââ Screen 3: Path Selection + Download ââ -->
+  <!-- ── Screen 3: Path Selection + Download ── -->
   <div class="screen" id="screen-result">
     <div class="screen-header">
-      <div class="back-btn" onclick="goTo('threshold')">â</div>
+      <div class="back-btn" onclick="goTo('threshold')">←</div>
       <div>
-        <div class="screen-title">à¹à¸¥à¸·à¸­à¸ Path</div>
-        <div class="screen-sub">à¹à¸à¸° path à¸à¸µà¹à¹à¸¡à¹à¸à¹à¸­à¸à¸à¸²à¸£à¹à¸à¸·à¹à¸­à¸¥à¸à¸­à¸­à¸</div>
+        <div class="screen-title">เลือก Path</div>
+        <div class="screen-sub">แตะ path ที่ไม่ต้องการเพื่อลบออก</div>
       </div>
     </div>
 
@@ -267,19 +267,19 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
 
     <!-- Path count + reset -->
     <div class="path-info">
-      <div class="path-count">à¹à¸¥à¸·à¸­à¸à¹à¸¥à¹à¸§ <span id="selectedCount">0</span> / <span id="totalCount">0</span> paths</div>
-      <button class="btn-reset" onclick="resetPaths()">à¹à¸¥à¸·à¸­à¸à¸à¸±à¹à¸à¸«à¸¡à¸</button>
+      <div class="path-count">เลือกแล้ว <span id="selectedCount">0</span> / <span id="totalCount">0</span> paths</div>
+      <button class="btn-reset" onclick="resetPaths()">เลือกทั้งหมด</button>
     </div>
 
     <!-- Download -->
     <div class="action-bar" style="position:relative;background:none;padding-bottom:20px;">
       <button class="btn btn-primary" id="btnDXF" onclick="downloadDXF()">
-        â¬ Download DXF
+        ⬇ Download DXF
       </button>
     </div>
   </div>
 
-  <!-- ââ Screen 4: Files ââ -->
+  <!-- ── Screen 4: Files ── -->
   <div class="screen" id="screen-files">
     <div class="files-list" id="filesList"></div>
   </div>
@@ -287,10 +287,10 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
   <!-- Bottom Nav -->
   <div class="bottom-nav">
     <button class="nav-item active" onclick="switchNav(this,'upload')">
-      <div class="nav-icon">â</div><div class="nav-label">à¹à¸à¸¥à¸à¸£à¸¹à¸</div>
+      <div class="nav-icon">➕</div><div class="nav-label">แปลงรูป</div>
     </button>
     <button class="nav-item" onclick="switchNav(this,'files')">
-      <div class="nav-icon">ð</div><div class="nav-label">à¹à¸à¸¥à¹à¸à¸­à¸à¸à¸±à¸</div>
+      <div class="nav-icon">📁</div><div class="nav-label">ไฟล์ของฉัน</div>
     </button>
   </div>
 </div>
@@ -299,23 +299,23 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
 <div class="toast" id="toast"></div>
 
 <script>
-// ââ Config ââ
+// ── Config ──
 const BACKEND_URL = 'https://pj-backend-production-2e6a.up.railway.app';
 
-// ââ State ââ
+// ── State ──
 let currentImageDataUrl = '';
 let currentImageBase64 = '';
 let currentThreshold = 128;
 let currentInvert = false;
 let currentSvgContent = '';
 let totalPaths = 0;
-let deselectedPaths = new Set(); // à¹à¸à¹à¸ index à¸à¸­à¸ path à¸à¸µà¹à¸à¸¹à¸ deselect
+let deselectedPaths = new Set(); // เก็บ index ของ path ที่ถูก deselect
 let savedFiles = JSON.parse(localStorage.getItem('pj_files_v2') || '[]');
 
-// ââ Init ââ
+// ── Init ──
 function init() { renderFiles(); }
 
-// ââ Navigation ââ
+// ── Navigation ──
 function goTo(screen) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + screen).classList.add('active');
@@ -326,10 +326,10 @@ function switchNav(btn, screen) {
   goTo(screen);
 }
 function showSettings() {
-  showToast('âï¸ Settings â coming soon');
+  showToast('⚙️ Settings — coming soon');
 }
 
-// ââ File Upload ââ
+// ── File Upload ──
 let isColorMode = false;
 let preprocessedDataUrl = null;
 
@@ -353,25 +353,25 @@ function handleFile(e) {
     if (color) {
       // Show loading while calling preprocess
       const overlay = document.getElementById('traceLoading');
-      document.getElementById('traceLoadingText').textContent = 'à¸à¸³à¸¥à¸±à¸à¸§à¸´à¹à¸à¸£à¸²à¸°à¸«à¹à¸ªà¸µ...';
-      document.getElementById('traceLoadingSub').textContent = 'AI à¸à¸³à¸¥à¸±à¸à¸à¸¶à¸à¹à¸ªà¹à¸à¸­à¸­à¸à¸à¸²à¸à¸£à¸¹à¸à¸ªà¸µ';
+      document.getElementById('traceLoadingText').textContent = 'กำลังวิเคราะห์สี...';
+      document.getElementById('traceLoadingSub').textContent = 'AI กำลังดึงเส้นออกจากรูปสี';
       overlay.style.display = 'flex';
 
       try {
         const result = await callPreprocess(currentImageDataUrl);
         preprocessedDataUrl = result.dataUrl;
         isColorMode = true;
-        const modeText = result.mode === 'cartoon' ? 'ð¨ Cartoon / Anime' : 'ð· à¸ à¸²à¸à¸à¹à¸²à¸¢';
+        const modeText = result.mode === 'cartoon' ? '🎨 Cartoon / Anime' : '📷 ภาพถ่าย';
         document.getElementById('modeBadge').textContent = modeText;
         document.getElementById('modeBadge').style.display = 'block';
         document.getElementById('colorModeDesc').textContent =
           result.mode === 'cartoon'
-            ? 'à¸à¸£à¸§à¸à¸à¸ Cartoon/Anime â à¸à¸¶à¸à¹à¸ªà¹à¸à¸à¸³à¸­à¸±à¸à¹à¸à¸¡à¸±à¸à¸´'
-            : 'à¸à¸£à¸§à¸à¸à¸à¸ à¸²à¸à¸à¹à¸²à¸¢ â à¹à¸à¹ Edge Detection';
+            ? 'ตรวจพบ Cartoon/Anime — ดึงเส้นดำอัตโนมัติ'
+            : 'ตรวจพบภาพถ่าย — ใช้ Edge Detection';
       } catch(err) {
         // Fallback to B&W mode if preprocess fails
         isColorMode = false;
-        showToast('â ï¸ à¹à¸¡à¹à¸ªà¸²à¸¡à¸²à¸£à¸ preprocess à¹à¸à¹ â à¹à¸à¹ threshold à¹à¸à¸');
+        showToast('⚠️ ไม่สามารถ preprocess ได้ — ใช้ threshold แทน');
       }
 
       overlay.style.display = 'none';
@@ -390,9 +390,9 @@ function handleFile(e) {
       document.getElementById('preprocessedImg').style.display = 'block';
       document.getElementById('thresholdControls').style.display = 'none';
       document.getElementById('colorModeInfo').style.display = 'block';
-      document.getElementById('resultLabel').textContent = 'à¹à¸ªà¹à¸ (à¸à¸£à¹à¸­à¸¡ trace)';
-      document.getElementById('thresholdTitle').textContent = 'à¸à¸£à¸§à¸à¸ªà¸­à¸à¸à¸¥à¸¥à¸±à¸à¸à¹';
-      document.getElementById('thresholdSub').textContent = 'à¸à¸§à¸² = à¹à¸ªà¹à¸à¸à¸µà¹à¸à¸°à¹à¸à¸¥à¸à¹à¸à¹à¸ DXF';
+      document.getElementById('resultLabel').textContent = 'เส้น (พร้อม trace)';
+      document.getElementById('thresholdTitle').textContent = 'ตรวจสอบผลลัพธ์';
+      document.getElementById('thresholdSub').textContent = 'ขวา = เส้นที่จะแปลงเป็น DXF';
     } else {
       // B&W mode: show canvas, show threshold controls
       document.getElementById('bwCanvas').style.display = 'block';
@@ -400,9 +400,9 @@ function handleFile(e) {
       document.getElementById('thresholdControls').style.display = 'block';
       document.getElementById('colorModeInfo').style.display = 'none';
       document.getElementById('modeBadge').style.display = 'none';
-      document.getElementById('resultLabel').textContent = 'à¸à¸¥à¸¥à¸±à¸à¸à¹';
-      document.getElementById('thresholdTitle').textContent = 'à¸à¸£à¸±à¸à¸à¸§à¸²à¸¡à¹à¸à¹à¸¡à¹à¸ªà¹à¸';
-      document.getElementById('thresholdSub').textContent = 'à¹à¸¥à¸·à¹à¸­à¸ slider à¸à¸à¹à¸«à¹à¸à¹à¸ªà¹à¸à¸à¸±à¸à¸à¸µà¹à¸ªà¸¸à¸';
+      document.getElementById('resultLabel').textContent = 'ผลลัพธ์';
+      document.getElementById('thresholdTitle').textContent = 'ปรับความเข้มเส้น';
+      document.getElementById('thresholdSub').textContent = 'เลื่อน slider จนเห็นเส้นชัดที่สุด';
       renderBW();
     }
 
@@ -412,7 +412,7 @@ function handleFile(e) {
   e.target.value = '';
 }
 
-// ââ Detect if image has significant color ââ
+// ── Detect if image has significant color ──
 function detectIsColor(dataUrl) {
   return new Promise(resolve => {
     const img = new Image();
@@ -430,13 +430,13 @@ function detectIsColor(dataUrl) {
         totalSat += max === 0 ? 0 : (max - min) / max;
         count++;
       }
-      resolve((totalSat / count) > 0.08); // avg saturation > 8% â color
+      resolve((totalSat / count) > 0.08); // avg saturation > 8% → color
     };
     img.src = dataUrl;
   });
 }
 
-// ââ Call /preprocess API ââ
+// ── Call /preprocess API ──
 async function callPreprocess(dataUrl) {
   const blob = dataURLtoBlob(dataUrl);
   const formData = new FormData();
@@ -454,7 +454,7 @@ async function callPreprocess(dataUrl) {
   return { dataUrl: dataUrlResult, mode };
 }
 
-// ââ B&W Preview (Canvas API â runs in browser, à¹à¸¡à¹à¸à¹à¸­à¸à¸ªà¹à¸ server) ââ
+// ── B&W Preview (Canvas API — runs in browser, ไม่ต้องส่ง server) ──
 function renderBW() {
   const img = new Image();
   img.onload = () => {
@@ -493,20 +493,29 @@ function toggleInvert() {
   renderBW();
 }
 
-// ââ DataURL â Blob (à¹à¸à¹à¸à¸²à¸à¹à¸à¹à¸à¸¸à¸ browser à¸£à¸§à¸¡à¸à¸¶à¸à¸¡à¸·à¸­à¸à¸·à¸­) ââ
+// ── DataURL → Blob (ใช้งานได้ทุก browser รวมถึงมือถือ) ──
 function dataURLtoBlob(dataURL) {
   const arr = dataURL.split(',');
   const mime = arr[0].match(/:(.*?);/)[1];
   const bstr = atob(arr[1]);
-  let n = bstr.lengGôh;
+  let n = bstr.length;
   const u8arr = new Uint8Array(n);
   while (n--) u8arr[n] = bstr.charCodeAt(n);
   return new Blob([u8arr], { type: mime });
 }
 
-// ââ Send to Backend (Potrace) ââ
-n¥¹Õ¹Ñ¥½¸Í¹Q½	­¹ ¤ì(½¹ÍÐ½ÙÉ±äô½Õµ¹Ð¹Ñ±µ¹Ñ	å% ÑÉ1½¥¹¤ì(½Õµ¹Ð¹Ñ±µ¹Ñ	å% ÑÉ1½¥¹QáÐ¤¹ÑáÑ
-½¹Ñ¹ÐôââÏââÇâÑÉæâ«æ'âd¸¸¸ì(½Õµ¹Ð¹Ñ±µ¹Ñ	å% ÑÉ1½¥¹MÕ¤¹ÑáÑ
-½¹Ñ¹Ðô=Á¹
-X¬A½ÑÉââÏââÇââoââÃââââsâì(½ÙÉ±ä¹ÍÑå±¹¥ÍÁ±äô±àì((ÑÉäì(¼¼â[æ'âÈ½±½Èµ½Hæâ+æ$ÁÉÁÉ½ÍÍ¥µ°Ñ¡ÉÍ¡½±ôÄÈà°¥¹ÙÉÐõ±Í(¼¼â[æ'âÈ\µ½Hæâ+æ$½É¥¥¹°¥µâ{âæ'â·âÑ¡ÉÍ¡½±â_â×æ ÕÍÈæââßâ·â(½¹ÍÐ¥µQ½M¹ô¡¥Í
-½±½É5½ÁÉÁÉ½ÍÍÑUÉ°¤üÁÉÁÉ½ÍÍÑUÉ°èÕÉÉ¹Ñ%µÑUÉ°ì(½¹ÍÐ±½ôÑUI1Ñ½	±½¡¥µQ½M¹¤ì((½¹ÍÐ½ÉµÑô¹Ü½ÉµÑ ¤ì(½ÉµÑ¹ÁÁ¹ ¥µ
+// ── Send to Backend (Potrace) ──
+async function sendToBackend() {
+  const overlay = document.getElementById('traceLoading');
+  document.getElementById('traceLoadingText').textContent = 'กำลัง trace เส้น...';
+  document.getElementById('traceLoadingSub').textContent = 'OpenCV + Potrace กำลังประมวลผล';
+  overlay.style.display = 'flex';
+
+  try {
+    // ถ้า color mode → ใช้ preprocessed image, threshold=128, invert=false
+    // ถ้า B&W mode → ใช้ original image พร้อม threshold ที่ user เลือก
+    const imageToSend = (isColorMode && preprocessedDataUrl) ? preprocessedDataUrl : currentImageDataUrl;
+    const blob = dataURLtoBlob(imageToSend);
+
+    const formData = new FormData();
+    formData.append('ima
