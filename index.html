@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PJ — แปลงรูปเป็นเส้น</title>
+<title>PJ â à¹à¸à¸¥à¸à¸£à¸¹à¸à¹à¸à¹à¸à¹à¸ªà¹à¸</title>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -60,7 +60,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .screen-title { font-size: 1rem; font-weight: 600; }
 .screen-sub { font-size: 0.72rem; color: var(--muted); }
 
-/* ── Screen 2: Threshold ── */
+/* ââ Screen 2: Threshold ââ */
 .threshold-images { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 16px; }
 .img-box { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); aspect-ratio: 4/3; position: relative; background: var(--surface2); }
 .img-box img, .img-box canvas { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -87,7 +87,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
 .loading-text { font-size: 0.9rem; font-weight: 500; }
 .loading-sub { font-size: 0.72rem; color: var(--muted); text-align: center; }
 
-/* ── Screen 3: Path Selection / Result ── */
+/* ââ Screen 3: Path Selection / Result ââ */
 .svg-container { margin: 12px 16px; border-radius: 16px; overflow: hidden; background: white; border: 2px solid var(--border); position: relative; }
 .svg-container svg { width: 100%; height: auto; display: block; }
 
@@ -154,95 +154,109 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
       <div class="logo-icon">PJ</div>
       <div>
         <div class="logo-text">PJ</div>
-        <div class="logo-sub">แปลงรูปเป็นเส้นเลเซอร์</div>
+        <div class="logo-sub">à¹à¸à¸¥à¸à¸£à¸¹à¸à¹à¸à¹à¸à¹à¸ªà¹à¸à¹à¸¥à¹à¸à¸­à¸£à¹</div>
       </div>
     </div>
-    <div style="width:36px;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem" onclick="showSettings()">⚙️</div>
+    <div style="width:36px;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem" onclick="showSettings()">âï¸</div>
   </div>
 
-  <!-- ── Screen 1: Upload ── -->
+  <!-- ââ Screen 1: Upload ââ -->
   <div class="screen active" id="screen-upload">
     <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-      <div class="upload-icon">🖼️</div>
-      <div class="upload-title">เพิ่มรูปภาพ</div>
-      <div class="upload-sub">รองรับ JPG, PNG, HEIC<br>ปรับความเข้มเส้นได้เอง แม่นยำ 100%</div>
-      <button class="btn-upload">📂 เลือกรูปจากคลัง</button>
+      <div class="upload-icon">ð¼ï¸</div>
+      <div class="upload-title">à¹à¸à¸´à¹à¸¡à¸£à¸¹à¸à¸ à¸²à¸</div>
+      <div class="upload-sub">à¸£à¸­à¸à¸£à¸±à¸ JPG, PNG, HEIC<br>à¸à¸£à¸±à¸à¸à¸§à¸²à¸¡à¹à¸à¹à¸¡à¹à¸ªà¹à¸à¹à¸à¹à¹à¸­à¸ à¹à¸¡à¹à¸à¸¢à¸³ 100%</div>
+      <button class="btn-upload">ð à¹à¸¥à¸·à¸­à¸à¸£à¸¹à¸à¸à¸²à¸à¸à¸¥à¸±à¸</button>
       <input type="file" accept="image/*" style="display:none" id="fileInput" onchange="handleFile(event)">
     </div>
     <div class="tips-section">
-      <div class="tips-title">💡 รูปแบบที่ได้ผลดีที่สุด</div>
+      <div class="tips-title">ð¡ à¸£à¸¹à¸à¹à¸à¸à¸à¸µà¹à¹à¸à¹à¸à¸¥à¸à¸µà¸à¸µà¹à¸ªà¸¸à¸</div>
       <div class="tip-cards">
-        <div class="tip-card"><div class="tip-card-icon">🔲</div><div class="tip-card-title">ขาวดำชัดเจน</div><div class="tip-card-sub">ผลลัพธ์แม่นยำที่สุด</div></div>
-        <div class="tip-card"><div class="tip-card-icon">✏️</div><div class="tip-card-title">ภาพวาดเส้น</div><div class="tip-card-sub">เส้นชัด ไม่มีฉากหลังซับซ้อน</div></div>
-        <div class="tip-card"><div class="tip-card-icon">🎨</div><div class="tip-card-title">โลโก้ / ลายฉลุ</div><div class="tip-card-sub">contrast สูง ได้ผลดีมาก</div></div>
-        <div class="tip-card"><div class="tip-card-icon">📸</div><div class="tip-card-title">รูปถ่ายทั่วไป</div><div class="tip-card-sub">ปรับ threshold ช่วยได้</div></div>
+        <div class="tip-card"><div class="tip-card-icon">ð²</div><div class="tip-card-title">à¸à¸²à¸§à¸à¸³à¸à¸±à¸à¹à¸à¸</div><div class="tip-card-sub">à¸à¸¥à¸¥à¸±à¸à¸à¹à¹à¸¡à¹à¸à¸¢à¸³à¸à¸µà¹à¸ªà¸¸à¸</div></div>
+        <div class="tip-card"><div class="tip-card-icon">âï¸</div><div class="tip-card-title">à¸ à¸²à¸à¸§à¸²à¸à¹à¸ªà¹à¸</div><div class="tip-card-sub">à¹à¸ªà¹à¸à¸à¸±à¸ à¹à¸¡à¹à¸¡à¸µà¸à¸²à¸à¸«à¸¥à¸±à¸à¸à¸±à¸à¸à¹à¸­à¸</div></div>
+        <div class="tip-card"><div class="tip-card-icon">ð¨</div><div class="tip-card-title">à¹à¸¥à¹à¸à¹ / à¸¥à¸²à¸¢à¸à¸¥à¸¸</div><div class="tip-card-sub">contrast à¸ªà¸¹à¸ à¹à¸à¹à¸à¸¥à¸à¸µà¸¡à¸²à¸</div></div>
+        <div class="tip-card"><div class="tip-card-icon">ð¸</div><div class="tip-card-title">à¸£à¸¹à¸à¸à¹à¸²à¸¢à¸à¸±à¹à¸§à¹à¸</div><div class="tip-card-sub">à¸à¸£à¸±à¸ threshold à¸à¹à¸§à¸¢à¹à¸à¹</div></div>
       </div>
     </div>
   </div>
 
-  <!-- ── Screen 2: Threshold Preview ── -->
+  <!-- ââ Screen 2: Threshold Preview ââ -->
   <div class="screen" id="screen-threshold">
     <div class="screen-header">
-      <div class="back-btn" onclick="goTo('upload')">←</div>
-      <div>
-        <div class="screen-title">ปรับความเข้มเส้น</div>
-        <div class="screen-sub">เลื่อน slider จนเห็นเส้นชัดที่สุด</div>
+      <div class="back-btn" onclick="goTo('upload')">â</div>
+      <div style="flex:1">
+        <div class="screen-title" id="thresholdTitle">à¸à¸£à¸±à¸à¸à¸§à¸²à¸¡à¹à¸à¹à¸¡à¹à¸ªà¹à¸</div>
+        <div class="screen-sub" id="thresholdSub">à¹à¸¥à¸·à¹à¸­à¸ slider à¸à¸à¹à¸«à¹à¸à¹à¸ªà¹à¸à¸à¸±à¸à¸à¸µà¹à¸ªà¸¸à¸</div>
       </div>
+      <div id="modeBadge" style="display:none;font-size:0.65rem;font-weight:600;padding:4px 10px;border-radius:8px;background:rgba(37,99,235,0.15);color:var(--accent-light);white-space:nowrap;border:1px solid rgba(59,130,246,0.3)"></div>
     </div>
 
-    <!-- Split preview: original vs B&W -->
+    <!-- Split preview: original vs processed -->
     <div class="threshold-images">
       <div class="img-box">
-        <img id="origImg" src="" alt="ต้นฉบับ">
-        <div class="img-label">ต้นฉบับ</div>
+        <img id="origImg" src="" alt="à¸à¹à¸à¸à¸à¸±à¸">
+        <div class="img-label">à¸à¹à¸à¸à¸à¸±à¸</div>
       </div>
       <div class="img-box">
-        <canvas id="bwCanvas"></canvas>
-        <div class="img-label">ผลลัพธ์</div>
+        <!-- B&W canvas (B&W image mode) -->
+        <canvas id="bwCanvas" style="width:100%;height:100%;object-fit:contain;display:block;"></canvas>
+        <!-- Preprocessed result (color image mode) -->
+        <img id="preprocessedImg" src="" alt="à¸à¸¥à¸¥à¸±à¸à¸à¹" style="display:none;width:100%;height:100%;object-fit:contain;">
+        <div class="img-label" id="resultLabel">à¸à¸¥à¸¥à¸±à¸à¸à¹</div>
       </div>
     </div>
 
-    <!-- Controls -->
-    <div class="controls-card">
+    <!-- Controls: threshold (B&W mode only) -->
+    <div class="controls-card" id="thresholdControls">
       <div class="ctrl-row">
-        <div class="ctrl-label">⚫ ความเข้มเส้น (Threshold)</div>
+        <div class="ctrl-label">â« à¸à¸§à¸²à¸¡à¹à¸à¹à¸¡à¹à¸ªà¹à¸ (Threshold)</div>
         <div class="ctrl-value" id="thresholdVal">128</div>
       </div>
       <input type="range" id="thresholdSlider" min="0" max="255" value="128"
              oninput="onThresholdChange(this.value)">
-
       <div class="toggle-row">
         <div>
-          <div class="toggle-label">กลับสี (Invert)</div>
-          <div class="toggle-sub">ใช้เมื่อ object เป็นสีขาวบนพื้นดำ</div>
+          <div class="toggle-label">à¸à¸¥à¸±à¸à¸ªà¸µ (Invert)</div>
+          <div class="toggle-sub">à¹à¸à¹à¹à¸¡à¸·à¹à¸­ object à¹à¸à¹à¸à¸ªà¸µà¸à¸²à¸§à¸à¸à¸à¸·à¹à¸à¸à¸³</div>
         </div>
         <div class="toggle" id="invertToggle" onclick="toggleInvert()"></div>
       </div>
     </div>
 
+    <!-- Info card: color mode -->
+    <div class="controls-card" id="colorModeInfo" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:1.6rem;flex-shrink:0;">ð¨</div>
+        <div>
+          <div style="font-size:0.82rem;font-weight:500;margin-bottom:2px;" id="colorModeDesc">à¸à¸£à¸§à¸à¸à¸à¸£à¸¹à¸à¸ªà¸µ â à¸à¸¶à¸à¹à¸ªà¹à¸à¸­à¸±à¸à¹à¸à¸¡à¸±à¸à¸´à¹à¸¥à¹à¸§</div>
+          <div style="font-size:0.7rem;color:var(--muted);">à¸à¸§à¸² = à¹à¸ªà¹à¸à¸à¸µà¹à¸à¸°à¹à¸à¹ trace à¹à¸à¹à¸ DXF</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Send button -->
     <div class="action-bar" style="position:relative;background:none;">
-      <button class="btn btn-secondary" onclick="goTo('upload')">เปลี่ยนรูป</button>
+      <button class="btn btn-secondary" onclick="goTo('upload')">à¹à¸à¸¥à¸µà¹à¸¢à¸à¸£à¸¹à¸</button>
       <button class="btn btn-primary" id="btnTrace" onclick="sendToBackend()">
-        ✨ แปลงเส้น →
+        â¨ à¹à¸à¸¥à¸à¹à¸ªà¹à¸ â
       </button>
     </div>
 
-    <!-- Loading overlay -->
+    <!-- Loading overlay (preprocess + trace) -->
     <div class="loading-overlay" id="traceLoading" style="display:none">
       <div class="spinner"></div>
-      <div class="loading-text" id="traceLoadingText">กำลัง trace เส้น...</div>
-      <div class="loading-sub">OpenCV + Potrace กำลังประมวลผล</div>
+      <div class="loading-text" id="traceLoadingText">à¸à¸³à¸¥à¸±à¸à¸§à¸´à¹à¸à¸£à¸²à¸°à¸«à¹à¸ªà¸µ...</div>
+      <div class="loading-sub" id="traceLoadingSub">OpenCV à¸à¸³à¸¥à¸±à¸à¸à¸¶à¸à¹à¸ªà¹à¸</div>
     </div>
   </div>
 
-  <!-- ── Screen 3: Path Selection + Download ── -->
+  <!-- ââ Screen 3: Path Selection + Download ââ -->
   <div class="screen" id="screen-result">
     <div class="screen-header">
-      <div class="back-btn" onclick="goTo('threshold')">←</div>
+      <div class="back-btn" onclick="goTo('threshold')">â</div>
       <div>
-        <div class="screen-title">เลือก Path</div>
-        <div class="screen-sub">แตะ path ที่ไม่ต้องการเพื่อลบออก</div>
+        <div class="screen-title">à¹à¸¥à¸·à¸­à¸ Path</div>
+        <div class="screen-sub">à¹à¸à¸° path à¸à¸µà¹à¹à¸¡à¹à¸à¹à¸­à¸à¸à¸²à¸£à¹à¸à¸·à¹à¸­à¸¥à¸à¸­à¸­à¸</div>
       </div>
     </div>
 
@@ -253,19 +267,19 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
 
     <!-- Path count + reset -->
     <div class="path-info">
-      <div class="path-count">เลือกแล้ว <span id="selectedCount">0</span> / <span id="totalCount">0</span> paths</div>
-      <button class="btn-reset" onclick="resetPaths()">เลือกทั้งหมด</button>
+      <div class="path-count">à¹à¸¥à¸·à¸­à¸à¹à¸¥à¹à¸§ <span id="selectedCount">0</span> / <span id="totalCount">0</span> paths</div>
+      <button class="btn-reset" onclick="resetPaths()">à¹à¸¥à¸·à¸­à¸à¸à¸±à¹à¸à¸«à¸¡à¸</button>
     </div>
 
     <!-- Download -->
     <div class="action-bar" style="position:relative;background:none;padding-bottom:20px;">
       <button class="btn btn-primary" id="btnDXF" onclick="downloadDXF()">
-        ⬇ Download DXF
+        â¬ Download DXF
       </button>
     </div>
   </div>
 
-  <!-- ── Screen 4: Files ── -->
+  <!-- ââ Screen 4: Files ââ -->
   <div class="screen" id="screen-files">
     <div class="files-list" id="filesList"></div>
   </div>
@@ -273,10 +287,10 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
   <!-- Bottom Nav -->
   <div class="bottom-nav">
     <button class="nav-item active" onclick="switchNav(this,'upload')">
-      <div class="nav-icon">➕</div><div class="nav-label">แปลงรูป</div>
+      <div class="nav-icon">â</div><div class="nav-label">à¹à¸à¸¥à¸à¸£à¸¹à¸</div>
     </button>
     <button class="nav-item" onclick="switchNav(this,'files')">
-      <div class="nav-icon">📁</div><div class="nav-label">ไฟล์ของฉัน</div>
+      <div class="nav-icon">ð</div><div class="nav-label">à¹à¸à¸¥à¹à¸à¸­à¸à¸à¸±à¸</div>
     </button>
   </div>
 </div>
@@ -285,23 +299,23 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Config ──
+// ââ Config ââ
 const BACKEND_URL = 'https://pj-backend-production-2e6a.up.railway.app';
 
-// ── State ──
+// ââ State ââ
 let currentImageDataUrl = '';
 let currentImageBase64 = '';
 let currentThreshold = 128;
 let currentInvert = false;
 let currentSvgContent = '';
 let totalPaths = 0;
-let deselectedPaths = new Set(); // เก็บ index ของ path ที่ถูก deselect
+let deselectedPaths = new Set(); // à¹à¸à¹à¸ index à¸à¸­à¸ path à¸à¸µà¹à¸à¸¹à¸ deselect
 let savedFiles = JSON.parse(localStorage.getItem('pj_files_v2') || '[]');
 
-// ── Init ──
+// ââ Init ââ
 function init() { renderFiles(); }
 
-// ── Navigation ──
+// ââ Navigation ââ
 function goTo(screen) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + screen).classList.add('active');
@@ -312,34 +326,135 @@ function switchNav(btn, screen) {
   goTo(screen);
 }
 function showSettings() {
-  showToast('⚙️ Settings — coming soon');
+  showToast('âï¸ Settings â coming soon');
 }
 
-// ── File Upload ──
+// ââ File Upload ââ
+let isColorMode = false;
+let preprocessedDataUrl = null;
+
 function handleFile(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = ev => {
+  reader.onload = async ev => {
     currentImageDataUrl = ev.target.result;
     currentImageBase64 = currentImageDataUrl.split(',')[1];
-    // Show threshold screen
+
+    // Reset state
+    currentThreshold = 128;
+    currentInvert = false;
+    isColorMode = false;
+    preprocessedDataUrl = null;
+
+    // Check if image is color
+    const color = await detectIsColor(currentImageDataUrl);
+
+    if (color) {
+      // Show loading while calling preprocess
+      const overlay = document.getElementById('traceLoading');
+      document.getElementById('traceLoadingText').textContent = 'à¸à¸³à¸¥à¸±à¸à¸§à¸´à¹à¸à¸£à¸²à¸°à¸«à¹à¸ªà¸µ...';
+      document.getElementById('traceLoadingSub').textContent = 'AI à¸à¸³à¸¥à¸±à¸à¸à¸¶à¸à¹à¸ªà¹à¸à¸­à¸­à¸à¸à¸²à¸à¸£à¸¹à¸à¸ªà¸µ';
+      overlay.style.display = 'flex';
+
+      try {
+        const result = await callPreprocess(currentImageDataUrl);
+        preprocessedDataUrl = result.dataUrl;
+        isColorMode = true;
+        const modeText = result.mode === 'cartoon' ? 'ð¨ Cartoon / Anime' : 'ð· à¸ à¸²à¸à¸à¹à¸²à¸¢';
+        document.getElementById('modeBadge').textContent = modeText;
+        document.getElementById('modeBadge').style.display = 'block';
+        document.getElementById('colorModeDesc').textContent =
+          result.mode === 'cartoon'
+            ? 'à¸à¸£à¸§à¸à¸à¸ Cartoon/Anime â à¸à¸¶à¸à¹à¸ªà¹à¸à¸à¸³à¸­à¸±à¸à¹à¸à¸¡à¸±à¸à¸´'
+            : 'à¸à¸£à¸§à¸à¸à¸à¸ à¸²à¸à¸à¹à¸²à¸¢ â à¹à¸à¹ Edge Detection';
+      } catch(err) {
+        // Fallback to B&W mode if preprocess fails
+        isColorMode = false;
+        showToast('â ï¸ à¹à¸¡à¹à¸ªà¸²à¸¡à¸²à¸£à¸ preprocess à¹à¸à¹ â à¹à¸à¹ threshold à¹à¸à¸');
+      }
+
+      overlay.style.display = 'none';
+    }
+
+    // Setup threshold screen
     document.getElementById('origImg').src = currentImageDataUrl;
     document.getElementById('thresholdSlider').value = 128;
     document.getElementById('thresholdVal').textContent = '128';
-    currentThreshold = 128;
-    currentInvert = false;
     document.getElementById('invertToggle').classList.remove('on');
+
+    if (isColorMode && preprocessedDataUrl) {
+      // Color mode: show preprocessed on right, hide threshold controls
+      document.getElementById('bwCanvas').style.display = 'none';
+      document.getElementById('preprocessedImg').src = preprocessedDataUrl;
+      document.getElementById('preprocessedImg').style.display = 'block';
+      document.getElementById('thresholdControls').style.display = 'none';
+      document.getElementById('colorModeInfo').style.display = 'block';
+      document.getElementById('resultLabel').textContent = 'à¹à¸ªà¹à¸ (à¸à¸£à¹à¸­à¸¡ trace)';
+      document.getElementById('thresholdTitle').textContent = 'à¸à¸£à¸§à¸à¸ªà¸­à¸à¸à¸¥à¸¥à¸±à¸à¸à¹';
+      document.getElementById('thresholdSub').textContent = 'à¸à¸§à¸² = à¹à¸ªà¹à¸à¸à¸µà¹à¸à¸°à¹à¸à¸¥à¸à¹à¸à¹à¸ DXF';
+    } else {
+      // B&W mode: show canvas, show threshold controls
+      document.getElementById('bwCanvas').style.display = 'block';
+      document.getElementById('preprocessedImg').style.display = 'none';
+      document.getElementById('thresholdControls').style.display = 'block';
+      document.getElementById('colorModeInfo').style.display = 'none';
+      document.getElementById('modeBadge').style.display = 'none';
+      document.getElementById('resultLabel').textContent = 'à¸à¸¥à¸¥à¸±à¸à¸à¹';
+      document.getElementById('thresholdTitle').textContent = 'à¸à¸£à¸±à¸à¸à¸§à¸²à¸¡à¹à¸à¹à¸¡à¹à¸ªà¹à¸';
+      document.getElementById('thresholdSub').textContent = 'à¹à¸¥à¸·à¹à¸­à¸ slider à¸à¸à¹à¸«à¹à¸à¹à¸ªà¹à¸à¸à¸±à¸à¸à¸µà¹à¸ªà¸¸à¸';
+      renderBW();
+    }
+
     goTo('threshold');
-    // Render initial B&W preview
-    renderBW();
   };
   reader.readAsDataURL(file);
-  // Reset input so same file can be re-selected
   e.target.value = '';
 }
 
-// ── B&W Preview (Canvas API — runs in browser, ไม่ต้องส่ง server) ──
+// ââ Detect if image has significant color ââ
+function detectIsColor(dataUrl) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.min(img.width, 80);
+      canvas.height = Math.min(img.height, 80);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let totalSat = 0, count = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i+1], b = data[i+2];
+        const max = Math.max(r,g,b), min = Math.min(r,g,b);
+        totalSat += max === 0 ? 0 : (max - min) / max;
+        count++;
+      }
+      resolve((totalSat / count) > 0.08); // avg saturation > 8% â color
+    };
+    img.src = dataUrl;
+  });
+}
+
+// ââ Call /preprocess API ââ
+async function callPreprocess(dataUrl) {
+  const blob = dataURLtoBlob(dataUrl);
+  const formData = new FormData();
+  formData.append('image', blob, 'image.jpg');
+  formData.append('mode', 'auto');
+  const resp = await fetch(`${BACKEND_URL}/preprocess`, { method: 'POST', body: formData });
+  if (!resp.ok) throw new Error('Preprocess failed');
+  const mode = resp.headers.get('X-Mode') || 'cartoon';
+  const imgBlob = await resp.blob();
+  const dataUrlResult = await new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.readAsDataURL(imgBlob);
+  });
+  return { dataUrl: dataUrlResult, mode };
+}
+
+// ââ B&W Preview (Canvas API â runs in browser, à¹à¸¡à¹à¸à¹à¸­à¸à¸ªà¹à¸ server) ââ
 function renderBW() {
   const img = new Image();
   img.onload = () => {
@@ -378,218 +493,20 @@ function toggleInvert() {
   renderBW();
 }
 
-// ── DataURL → Blob (ใช้งานได้ทุก browser รวมถึงมือถือ) ──
+// ââ DataURL â Blob (à¹à¸à¹à¸à¸²à¸à¹à¸à¹à¸à¸¸à¸ browser à¸£à¸§à¸¡à¸à¸¶à¸à¸¡à¸·à¸­à¸à¸·à¸­) ââ
 function dataURLtoBlob(dataURL) {
   const arr = dataURL.split(',');
   const mime = arr[0].match(/:(.*?);/)[1];
   const bstr = atob(arr[1]);
-  let n = bstr.length;
+  let n = bstr.lengGôh;
   const u8arr = new Uint8Array(n);
   while (n--) u8arr[n] = bstr.charCodeAt(n);
   return new Blob([u8arr], { type: mime });
 }
 
-// ── Send to Backend (Potrace) ──
-async function sendToBackend() {
-  // แสดง loading
-  const overlay = document.getElementById('traceLoading');
-  overlay.style.display = 'flex';
-
-  try {
-    // แปลง dataUrl เป็น Blob
-    const blob = dataURLtoBlob(currentImageDataUrl);
-
-    const formData = new FormData();
-    formData.append('image', blob, 'image.jpg');
-    formData.append('threshold', currentThreshold.toString());
-    formData.append('invert', currentInvert.toString());
-
-    const resp = await fetch(`${BACKEND_URL}/trace`, {
-      method: 'POST',
-      body: formData
-    });
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
-      throw new Error(err.detail || 'Backend error');
-    }
-
-    const result = await resp.json();
-    currentSvgContent = result.svg;
-
-    overlay.style.display = 'none';
-    showPathSelection(currentSvgContent);
-    goTo('result');
-
-  } catch (err) {
-    overlay.style.display = 'none';
-    if (err.message.includes('fetch') || err.message.includes('Failed')) {
-      showToast('❌ Backend ยังไม่พร้อม — กำลังติดตั้ง Railway');
-    } else {
-      showToast('❌ ' + err.message);
-    }
-  }
-}
-
-// ── Path Selection ──
-function showPathSelection(svgContent) {
-  const container = document.getElementById('svgContainer');
-  container.innerHTML = svgContent;
-  deselectedPaths.clear();
-
-  const svgEl = container.querySelector('svg');
-  if (!svgEl) { showToast('❌ SVG ไม่ถูกต้อง'); return; }
-
-  // ให้ SVG เต็มความกว้าง
-  svgEl.removeAttribute('width');
-  svgEl.removeAttribute('height');
-  svgEl.style.width = '100%';
-  svgEl.style.height = 'auto';
-
-  // หา path elements ทั้งหมด
-  const paths = Array.from(svgEl.querySelectorAll('path, polygon, polyline'));
-  totalPaths = paths.length;
-
-  paths.forEach((path, i) => {
-    path.dataset.idx = i;
-    path.style.cursor = 'pointer';
-
-    path.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const idx = parseInt(path.dataset.idx);
-      if (deselectedPaths.has(idx)) {
-        // Re-select
-        deselectedPaths.delete(idx);
-        path.classList.remove('deselected');
-      } else {
-        // Deselect
-        deselectedPaths.add(idx);
-        path.classList.add('deselected');
-      }
-      updatePathCount();
-    });
-  });
-
-  updatePathCount();
-}
-
-function updatePathCount() {
-  const selected = totalPaths - deselectedPaths.size;
-  document.getElementById('selectedCount').textContent = selected;
-  document.getElementById('totalCount').textContent = totalPaths;
-  document.getElementById('btnDXF').disabled = (selected === 0);
-}
-
-function resetPaths() {
-  deselectedPaths.clear();
-  const svgEl = document.querySelector('#svgContainer svg');
-  if (svgEl) {
-    svgEl.querySelectorAll('.deselected').forEach(el => el.classList.remove('deselected'));
-  }
-  updatePathCount();
-}
-
-// ── DXF Export — ส่งไป backend แปลงด้วย ezdxf + bulge ──
-async function downloadDXF() {
-  const svgEl = document.querySelector('#svgContainer svg');
-  if (!svgEl) { showToast('⚠️ ไม่มีข้อมูล'); return; }
-
-  const paths = Array.from(svgEl.querySelectorAll('path, polygon, polyline'));
-  const selectedIndices = paths.map((_, i) => i).filter(i => !deselectedPaths.has(i));
-
-  if (selectedIndices.length === 0) { showToast('⚠️ กรุณาเลือกอย่างน้อย 1 path'); return; }
-
-  const btn = document.getElementById('btnDXF');
-  btn.disabled = true;
-  btn.textContent = '⏳ กำลังสร้าง DXF...';
-
-  try {
-    const formData = new FormData();
-    formData.append('svg', currentSvgContent);
-    formData.append('selected', selectedIndices.join(','));
-
-    const resp = await fetch(`${BACKEND_URL}/export-dxf`, {
-      method: 'POST',
-      body: formData
-    });
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
-      throw new Error(err.detail || 'Export error');
-    }
-
-    const blob = await resp.blob();
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'pj-result.dxf';
-    a.click();
-    URL.revokeObjectURL(a.href);
-
-    showToast(`✅ ดาวน์โหลด DXF แล้ว (${selectedIndices.length} paths)`);
-    saveFileRecord();
-
-  } catch (err) {
-    showToast('❌ ' + err.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '⬇ Download DXF';
-    updatePathCount();
-  }
-}
-
-// ── Save file record ──
-function saveFileRecord() {
-  const record = {
-    id: Date.now(),
-    date: new Date().toLocaleDateString('th-TH'),
-    expiry: Date.now() + 7 * 24 * 60 * 60 * 1000,
-    thumb: currentImageDataUrl ? currentImageDataUrl.substring(0, 300) : null,
-    pathCount: totalPaths - deselectedPaths.size
-  };
-  savedFiles.unshift(record);
-  if (savedFiles.length > 20) savedFiles = savedFiles.slice(0, 20);
-  localStorage.setItem('pj_files_v2', JSON.stringify(savedFiles));
-  renderFiles();
-}
-
-function renderFiles() {
-  const list = document.getElementById('filesList');
-  const header = '<div style="font-size:0.75rem;color:var(--muted);margin-bottom:14px;letter-spacing:0.05em">📁 ไฟล์ของฉัน — เก็บ 7 วัน</div>';
-  const now = Date.now();
-  savedFiles = savedFiles.filter(f => f.expiry > now);
-  localStorage.setItem('pj_files_v2', JSON.stringify(savedFiles));
-
-  if (savedFiles.length === 0) {
-    list.innerHTML = header + `<div class="empty-state"><div class="empty-icon">📂</div><div class="empty-title">ยังไม่มีไฟล์</div><div style="font-size:0.78rem;color:var(--muted);margin-top:4px">แปลงรูปแล้วจะบันทึกประวัติไว้ที่นี่</div></div>`;
-    return;
-  }
-
-  const items = savedFiles.map(f => {
-    const daysLeft = Math.ceil((f.expiry - now) / (24*60*60*1000));
-    const urgent = daysLeft <= 3;
-    const thumbHTML = f.thumb ? `<img src="${f.thumb}" alt="">` : '⬡';
-    return `<div class="file-item">
-      <div class="file-thumb">${thumbHTML}</div>
-      <div class="file-info">
-        <div class="file-name">${f.date} — ${f.pathCount || '?'} paths</div>
-        <div class="file-tags"><span class="tag tag-dxf">DXF</span></div>
-        <div class="file-expire" style="${urgent?'color:var(--danger)':''}">${urgent?'⚠️':'⏱'} ลบใน ${daysLeft} วัน</div>
-      </div>
-    </div>`;
-  }).join('');
-
-  list.innerHTML = header + items;
-}
-
-// ── Toast ──
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-init();
-</script>
-</body>
-</html>
+// ââ Send to Backend (Potrace) ââ
+n¥¹Õ¹Ñ¥½¸Í¹Q½	­¹ ¤ì(½¹ÍÐ½ÙÉ±äô½Õµ¹Ð¹Ñ±µ¹Ñ	å% ÑÉ1½¥¹¤ì(½Õµ¹Ð¹Ñ±µ¹Ñ	å% ÑÉ1½¥¹QáÐ¤¹ÑáÑ
+½¹Ñ¹ÐôââÏââÇâÑÉæâ«æ'âd¸¸¸ì(½Õµ¹Ð¹Ñ±µ¹Ñ	å% ÑÉ1½¥¹MÕ¤¹ÑáÑ
+½¹Ñ¹Ðô=Á¹
+X¬A½ÑÉââÏââÇââoââÃââââsâì(½ÙÉ±ä¹ÍÑå±¹¥ÍÁ±äô±àì((ÑÉäì(¼¼â[æ'âÈ½±½Èµ½Hæâ+æ$ÁÉÁÉ½ÍÍ¥µ°Ñ¡ÉÍ¡½±ôÄÈà°¥¹ÙÉÐõ±Í(¼¼â[æ'âÈ\µ½Hæâ+æ$½É¥¥¹°¥µâ{âæ'â·âÑ¡ÉÍ¡½±â_â×æ ÕÍÈæââßâ·â(½¹ÍÐ¥µQ½M¹ô¡¥Í
+½±½É5½ÁÉÁÉ½ÍÍÑUÉ°¤üÁÉÁÉ½ÍÍÑUÉ°èÕÉÉ¹Ñ%µÑUÉ°ì(½¹ÍÐ±½ôÑUI1Ñ½	±½¡¥µQ½M¹¤ì((½¹ÍÐ½ÉµÑô¹Ü½ÉµÑ ¤ì(½ÉµÑ¹ÁÁ¹ ¥µ
