@@ -608,7 +608,7 @@ async function downloadDXF() {
 
     const formData = new FormData();
     formData.append('svg', filteredSvg);
-    const resp = await fetch(`${BACKEND_URL}/svg_to_dxf`, { method: 'POST', body: formData });
+    const resp = await fetch(`${BACKEND_URL}/export-dxf`, { method: 'POST', body: formData });
     if (!resp.ok) throw new Error('DXF error ' + resp.status);
     const blob = await resp.blob();
 
