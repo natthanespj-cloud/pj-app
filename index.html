@@ -105,7 +105,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
 
 .path-info { margin: 0 16px 12px; display: flex; align-items: center; justify-content: space-between; }
 .path-count { font-size: 0.78rem; color: var(--muted); }
-.path-count span { color: var(--accent-light); font-weight: 600; font-family: 'DM Mono', monospace; }
+.path-count span { color: var(--accent-light); font-weight: 600; font-family: 'DM!Mono', monospace; }
 .btn-reset { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-family: 'Kanit', sans-serif; font-size: 0.72rem; color: var(--muted); cursor: pointer; }
 
 /* Action bar */
@@ -510,12 +510,182 @@ async function sendToBackend() {
   document.getElementById('traceLoadingText').textContent = 'กำลัง trace เส้น...';
   document.getElementById('traceLoadingSub').textContent = 'OpenCV + Potrace กำลังประมวลผล';
   overlay.style.display = 'flex';
+  document.getElementById('btnTrace').disabled = true;
 
   try {
-    // ถ้า color mode → ใช้ preprocessed image, threshold=128, invert=false
-    // ถ้า B&W mode → ใช้ original image พร้อม threshold ที่ user เลือก
     const imageToSend = (isColorMode && preprocessedDataUrl) ? preprocessedDataUrl : currentImageDataUrl;
     const blob = dataURLtoBlob(imageToSend);
+    const formData = new FormData();
+    formData.append('image', blob, 'image.png');
+    formData.append('threshold', isColorMode ? '180' : currentThreshold.toString());
+    formData.append('invert', isColorMode ? 'false' : currentInvert.toString());
+
+    const resp = await fetch(`${BACKEND_URL}/trace`, { method: 'POST', body: formData });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
+      throw new Error(err.detail || 'Backend error');
+    }
+
+    const result = await resp.json();
+    currentSvgContent = result.svg;
+
+    overlay.style.display = 'none';
+    setupPathSelection(currentSvgContent);
+    goTo('result');
+
+    // Save record
+    const now = Date.now();
+    const entry = {
+      id: now,
+      date: new Date(now).toLocaleDateString('th-TH', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
+      thumb: currentImageDataUrl,
+      svgContent: result.svg,
+      pathCount: result.path_count || 0,
+      expiry: now + 7 * 24 * 60 * 60 * 1000
+    };
+    savedFiles.unshift(entry);
+    if (savedFiles.length > 30) savedFiles = savedFiles.slice(0, 30);
+    localStorage.setItem('pj_files_v2', JSON.stringify(savedFiles));
+
+  } catch (err) {
+    overlay.style.display = 'none';
+    showToast('❌ ' + err.message);
+  } finally {
+    document.getElementById('btnTrace').disabled = false;
+  }
+}
+
+// ── Setup path selection in SVG ──
+function setupPathSelection(svgContent) {
+  const container = document.getElementById('svgContainer');
+  container.innerHTML = svgContent;
+  const svg = container.querySelector('svg');
+  if (!svg) return;
+
+  const paths = svg.querySelectorAll('path, polygon, polyline');
+  totalPaths = paths.length;
+  deselectedPaths.clear();
+  document.getElementById('totalCount').textContent = totalPaths;
+  document.getElementById('selectedCount').textContent = totalPaths;
+
+  paths.forEach((p, i) => {
+    p.dataset.idx = i;
+    p.addEventListener('click', () => {
+      if (deselectedPaths.has(i)) {
+        deselectedPaths.delete(i);
+        p.classList.remove('deselected');
+      } else {
+        deselectedPaths.add(i);
+        p.classList.add('deselected');
+      }
+      document.getElementById('selectedCount').textContent = totalPaths - deselectedPaths.size;
+    });
+  });
+}
+
+// ── Reset all paths to selected ──
+function resetPaths() {
+  deselectedPaths.clear();
+  const svg = document.querySelector('#svgContainer svg');
+  if (!svg) return;
+  svg.querySelectorAll('.deselected').forEach(p => p.classList.remove('deselected'));
+  document.getElementById('selectedCount').textContent = totalPaths;
+  showToast('✅ เลือกทุก path แล้ว');
+}
+
+// ── Download DXF ──
+async function downloadDXF() {
+  const btn = document.getElementById('btnDXF');
+  btn.disabled = true;
+  btn.textContent = 'กำลังสร้าง DXF...';
+
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(currentSvgContent, 'image/svg+xml');
+    const allPaths = doc.querySelectorAll('path, polygon, polyline');
+    deselectedPaths.forEach(i => { if (allPaths[i]) allPaths[i].remove(); });
+    const filteredSvg = doc.querySelector('svg').outerHTML;
 
     const formData = new FormData();
-    formData.append('ima
+    formData.append('svg', filteredSvg);
+    const resp = await fetch(`${BACKEND_URL}/svg_to_dxf`, { method: 'POST', body: formData });
+    if (!resp.ok) throw new Error('DXF error ' + resp.status);
+    const blob = await resp.blob();
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pj_laser_' + Date.now() + '.dxf';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('✅ ดาวน์โหลด DXF สำเร็จ!');
+  } catch (err) {
+    showToast('❌ สร้าง DXF ไม่ได้: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '&#8615; Download DXF';
+  }
+}
+
+// ── Render Files List ──
+function renderFiles() {
+  const list = document.getElementById('filesList');
+  const now = Date.now();
+  savedFiles = savedFiles.filter(f => (f.expiry || Infinity) > now);
+  localStorage.setItem('pj_files_v2', JSON.stringify(savedFiles));
+
+  if (savedFiles.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📂</div><div class="empty-title">ยังไม่มีไฟล์</div><div style="font-size:0.78rem;color:var(--muted);margin-top:4px">แปลงรูปแล้วจะบันทึกที่นี่อัตโนมัติ</div></div>';
+    return;
+  }
+
+  list.innerHTML = savedFiles.map((f, idx) => {
+    const daysLeft = f.expiry ? Math.ceil((f.expiry - now) / 86400000) : 99;
+    const urgent = daysLeft <= 3;
+    const thumbHTML = f.thumb ? '<img src="' + f.thumb + '" alt="">' : '⬡';
+    return '<div class="file-item fade-in">' +
+      '<div class="file-thumb">' + thumbHTML + '</div>' +
+      '<div class="file-info">' +
+        '<div class="file-name">' + (f.date || 'ไฟล์') + ' — ' + (f.pathCount || '?') + ' paths</div>' +
+        '<div class="file-tags"><span class="tag tag-dxf">DXF</span></div>' +
+        '<div class="file-expire" style="' + (urgent ? 'color:var(--danger)' : '') + '">' +
+          (urgent ? '⚠️' : '⏱') + ' ลบใน ' + daysLeft + ' วัน</div>' +
+      '</div>' +
+      '<div class="file-actions">' +
+        '<button class="file-btn" onclick="reloadFile(' + idx + ')">↩</button>' +
+        '<button class="file-btn" onclick="deleteFile(' + idx + ')" style="color:var(--danger)">🗑</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function reloadFile(idx) {
+  const f = savedFiles[idx];
+  if (!f || !f.svgContent) { showToast('❌ ไม่พบข้อมูล SVG'); return; }
+  currentSvgContent = f.svgContent;
+  setupPathSelection(f.svgContent);
+  switchNav(document.querySelectorAll('.nav-item')[0], 'result');
+  showToast('↩ โหลดไฟล์แล้ว');
+}
+
+function deleteFile(idx) {
+  savedFiles.splice(idx, 1);
+  localStorage.setItem('pj_files_v2', JSON.stringify(savedFiles));
+  renderFiles();
+  showToast('🗑 ลบไฟล์แล้ว');
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Boot ──
+init();
+</script>
+</body>
+</html>
