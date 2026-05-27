@@ -153,7 +153,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22p
     <div class="logo">
       <div class="logo-icon">PJ</div>
       <div>
-        <div class="logo-text">PJ</div>
+        <div class="logo-text">PJ <span id="appVersion" style="font-size:0.55rem;font-weight:400;color:var(--muted);font-family:'DM Mono',monospace;vertical-align:middle;"></span></div>
         <div class="logo-sub">แปลงรูปเป็นเส้นเลเซอร์</div>
       </div>
     </div>
@@ -313,7 +313,10 @@ let deselectedPaths = new Set(); // เก็บ index ของ path ที่�
 let savedFiles = JSON.parse(localStorage.getItem('pj_files_v2') || '[]');
 
 // ── Init ──
-function init() { renderFiles(); }
+function init() {
+  renderFiles();
+  fetch(`${BACKEND_URL}/health`).then(r=>r.json()).then(d=>{if(d.version)document.getElementById('appVersion').textContent='v'+d.version;}).catch(()=>{});
+}
 
 // ── Navigation ──
 function goTo(screen) {
